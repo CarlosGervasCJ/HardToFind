@@ -28,7 +28,7 @@ EPOCH_PRESETS = {
         "epoch_min": 60676.0,  # 2025-01-01
         "epoch_max": 61039.0,  # 2025-12-31
     },
-    "2026-recente": {
+    "2026": {
         "label": "2026 Mais Recente",
         "epoch_min": 61040.0,  # 2026-01-01
         "epoch_max": 61500.0,  # Período recente
