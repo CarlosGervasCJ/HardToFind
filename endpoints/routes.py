@@ -11,6 +11,12 @@ from image_processing import apply_asinh_stretch
 api_bp = Blueprint("api", __name__)
 
 
+from flask import render_template
+
+@api_bp.get("/")
+def index():
+    return render_template("visualizer.html")
+
 # ---------------------------------------------------------------------------
 # GET /missions
 # ---------------------------------------------------------------------------
