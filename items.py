@@ -25,13 +25,13 @@ BAND_ALIASES = {
 EPOCH_PRESETS = {
     "2025-inicio": {
         "label": "Início de 2025 (Jan - Abr 2025)",
-        "epoch_min": 60676.0,  # 2025-01-01
-        "epoch_max": 60795.0,  # 2025-04-30
+        "epoch_min": None,  # 2025-01-01
+        "epoch_max": None,  # 2025-04-30
     },
     "2026-recente": {
         "label": "2026 Mais Recente (Jan 2026 em diante)",
-        "epoch_min": 61041.0,  # 2026-01-01
-        "epoch_max": 61500.0,  # Período recente
+        "epoch_min": None,  # 2026-01-01
+        "epoch_max": None,  # Período recente
     },
 }
 
