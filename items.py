@@ -20,16 +20,16 @@ BAND_ALIASES = {
 }
 
 # ---------------------------------------------------------------------------
-# Períodos Ajustados com base na disponibilidade real do IRSA (MJD)
+# Períodos Disponíveis (2025, 2026 e Todos) em MJD
 # ---------------------------------------------------------------------------
 EPOCH_PRESETS = {
     "2025": {
-        "label": "Ano de 2025 (Abr - Dez 2025)",
+        "label": "Ano de 2025",
         "epoch_min": 60676.0,  # 2025-01-01
-        "epoch_max": 61040.0,  # 2025-12-31 (Cobre a faixa 60790 - 60998)
+        "epoch_max": 61040.0,  # 2025-12-31
     },
     "2026-recente": {
-        "label": "2026 Mais Recente (Jan 2026 em diante)",
+        "label": "2026 Mais Recente",
         "epoch_min": 61041.0,  # 2026-01-01
         "epoch_max": 61500.0,  # Período recente
     },
@@ -115,12 +115,9 @@ def find_closest_record(
 
     total = len(results)
     if total == 0:
-        return {
-            "error_type": "no_records_found_at_all", 
-            "message": f"Nenhum registro bruto retornado pelo IRSA SIA para a coleção '{collection}' neste raio e coordenadas."
-        }
+        return None, "no_records_found_at_all"
 
-    # 1. Aplicação de filtros de banda primeiro
+    # 1. Aplicação de filtros de banda
     if bands is not None:
         band_col = _detect_column(
             results,
@@ -133,17 +130,15 @@ def find_closest_record(
                 band_mask |= raw_vals == b.lower()
             results = results[band_mask]
             if len(results) == 0:
-                return {
-                    "error_type": "band_filtered_out", 
-                    "message": f"Registros encontrados, mas nenhum na banda solicitada '{band}'."
-                }
+                return None, "band_filtered_out"
 
-    # 2. Extração de épocas APÓS o filtro de banda
+    # 2. Extração de épocas pós-filtro de banda
     epoch_col, epochs = _get_epochs_array(results)
     min_found_mjd = float(epochs.min()) if epochs is not None and len(epochs) > 0 else None
     max_found_mjd = float(epochs.max()) if epochs is not None and len(epochs) > 0 else None
 
-    # 3. Aplicação de filtros de época (se definidos)
+    warning_msg = None
+    # 3. Aplicação de filtros de época com fallback inteligente
     if (epoch_min is not None or epoch_max is not None) and epochs is not None:
         mask = np.ones(len(results), dtype=bool)
         if epoch_min is not None:
@@ -151,14 +146,12 @@ def find_closest_record(
         if epoch_max is not None:
             mask &= epochs <= epoch_max
         
-        results = results[mask]
-        if len(results) == 0:
-            return {
-                "error_type": "epoch_filtered_out",
-                "min_available_mjd": min_found_mjd,
-                "max_available_mjd": max_found_mjd,
-                "message": f"Filtro temporal eliminou todos os registros. Faixa disponível nesta consulta (MJD): [{min_found_mjd}, {max_found_mjd}]"
-            }
+        filtered_results = results[mask]
+        if len(filtered_results) == 0:
+            # Fallback inteligente: se o período restrito não tiver dados, avisa mas retorna os dados reais encontrados
+            warning_msg = f"Nenhum registro no período solicitado. Exibindo dados disponíveis na faixa MJD: [{min_found_mjd}, {max_found_mjd}]"
+        else:
+            results = filtered_results
 
     ra_col  = _detect_column(results, ["ra", "s_ra"])  or "s_ra"
     dec_col = _detect_column(results, ["dec", "s_dec"]) or "s_dec"
@@ -171,9 +164,8 @@ def find_closest_record(
         )
         seps = target_coord.separation(rec_coords).deg
         coord_mask = seps <= coord_tol_deg
-        if coord_mask.sum() == 0:
-            return {"error_type": "tolerance_filtered_out", "message": "Nenhum registro dentro da tolerância angular."}
-        results = results[coord_mask]
+        if coord_mask.sum() > 0:
+            results = results[coord_mask]
 
     rec_coords = SkyCoord(
         ra=np.array(results[ra_col],  dtype=float) * u.deg,
@@ -204,7 +196,7 @@ def find_closest_record(
         record_dict["fits_url"] = None
         record_dict["is_table_format"] = False
 
-    return record_dict
+    return record_dict, warning_msg
 
 
 # ---------------------------------------------------------------------------
@@ -218,9 +210,7 @@ def search_spherex():
         radius     = float(request.args.get("radius", 60.0))
         band       = request.args.get("band", "d1")
         collection = request.args.get("collection", "spherex_dr1")
-        
-        # Agora utilize period=2025 para abranger os dados encontrados (MJD 60790 - 60998)
-        period     = request.args.get("period", "2025")
+        period     = request.args.get("period", "all")
 
         if period not in EPOCH_PRESETS:
             return jsonify({
@@ -230,7 +220,7 @@ def search_spherex():
 
         preset = EPOCH_PRESETS[period]
 
-        result = find_closest_record(
+        result, warning = find_closest_record(
             target_ra=ra,
             target_dec=dec,
             collection=collection,
@@ -241,23 +231,23 @@ def search_spherex():
             epoch_max=preset["epoch_max"],
         )
 
-        if isinstance(result, dict) and "error_type" in result:
+        if result is None:
             return jsonify({
-                "status": "error",
-                "error_type": result["error_type"],
-                "message": result["message"],
-                "details": result.get("details", {})
+                "status": "error", 
+                "message": f"Nenhum registro encontrado para a coleção '{collection}' nesta coordenada."
             }), 404
 
-        if result is None:
-            return jsonify({"status": "error", "message": "Nenhum registro encontrado."}), 404
-
-        return jsonify({
+        response_data = {
             "status": "success",
             "period": period,
             "period_label": preset["label"],
             "data": result
-        })
+        }
+
+        if warning:
+            response_data["warning"] = warning
+
+        return jsonify(response_data)
 
     except Exception as e:
         import traceback
