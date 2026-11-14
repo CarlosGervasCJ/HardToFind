@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HardTofind - Celestial Body Visualization</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script src="https://ajax.googleapis.com/apis/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://malsup.github.io/jquery.blockUI.js"></script>
+    <script src="static/logic.js"></script>
+  </head>
+  <body>
+    <div id="nav-left">
+      <div id="tabs">
+        <button id="tabSettings">Settings</button>
+        <button id="tabLinks" class="inactive">Links</button>
+        <button id="tabHelp"  class="inactive">Help</button>
+        <button id="tabAbout" class="inactive">About</button>
+      </div>
+
+      <div id="tabSettingsDiv" class="tabBody">
+
+        <div class="row">
+          <label title="Equatorial, decimal degrees or hms/dms (e.g., 12.3 45.6)"
+                 for="locInput">Right ascension and declination</label>
+        </div>
+        <div class="row">
+          <input type="text" class="resetters" id="locInput">
+        </div>
+
+        <!-- ================================================================
+             Seletor de missão
+             As <option>s são populadas dinamicamente pelo JS via GET /missions.
+             As opções estáticas abaixo servem como fallback caso /missions falhe.
+             ================================================================ -->
+        <div class="row" id="missionRow">
+          <select class="resetters" id="missionInput">
+            <option selected value="wise">WISE / unWISE</option>
+            <option value="spherex">SPHEREx</option>
+          </select>
+          <label for="missionInput" style="display:inline;">Telescope Mission</label>
+        </div>
+
+        <div class="row">
+          <input type="text" class="resetters" id="sizeInput" value="60">
+          <label for="sizeInput" style="display:inline;">Field of View (arcseconds)</label>
+        </div>
+
+        <!-- ================================================================
+             Seletor de banda
+             Populado dinamicamente ao selecionar uma missão.
+             WISE  : W1 | W2 | W1+W2
+             SPHEREx: CH1 … CH6
+             ================================================================ -->
+        <div class="row" id="bandRow">
+          <select class="resetters" id="bandInput">
+            <!-- preenchido por ws.updateBandOptions() em logic.js -->
+          </select>
+          <label for="bandInput" style="display:inline;">Band</label>
+        </div>
+
+        <div class="buttonRow">
+          <button id="setDefaultsButton" class="fullButt">Apply defaults</button>
+        </div>
+
+        <div id="mainSliders">
+          <div class="sliderrow" id="windowRow">
+            <label for="windowValue">
+              Sliding window (<span id="windowValue"></span> yrs)
+            </label>
+            <div id="windowInput"></div>
+          </div>
+          <div class="sliderrow">
+            <label for="speedValue">
+              Blink interval (<span id="speedValue"></span> ms)
+            </label>
+            <div id="speedInput"></div>
+          </div>
+          <div class="sliderrow">
+            <label for="zoomValue">
+              Zoom (<span id="zoomValue"></span>)
+            </label>
+            <div id="zoomInput"></div>
+          </div>
+        </div>
+
+        <div class="subsettings">
+          <div class="sliderrow" id="trimbrightRow">
+            <label for="trimbrightValue">
+              Min - max pixel values: <span id="trimbrightValue"></span>
+            </label>
+            <div id="trimbrightInput"></div>
+          </div>
+          <div class="sliderrow" id="linearRow">
+            <label for="linearValue">
+              Stretch Linearity (<span id="linearValue"></span>)
+            </label>
+            <div id="linearInput"></div>
+          </div>
+        </div>
+
+        <div id="advSettings">
+          <div class="row">
+            <input type="checkbox" class="resetters" id="invertInput" checked>
+            <label for="invertInput" style="display:inline;">Invert pixel values</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" class="resetters" id="maxdyrInput" checked>
+            <label for="maxdyrInput" style="display:inline;">Maximize dynamic range</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" class="resetters" id="scandirInput" checked>
+            <label for="scandirInput" style="display:inline;">Separate scan directions</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" class="resetters" id="neowiseOnlyInput" checked>
+            <label for="neowiseOnlyInput" style="display:inline;">Use only NEOWISE imagery</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" class="resetters" id="outerEpochsInput" checked>
+            <label for="outerEpochsInput" style="display:inline;">Skip middle epochs</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" class="resetters" id="uniqueWindowInput" checked>
+            <label for="uniqueWindowInput" style="display:inline;">Skip duplicate windows</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" class="resetters" id="smoothScanInput" checked>
+            <label for="smoothScanInput" style="display:inline;">Smooth by scan direction</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" class="urlers" id="borderInput" checked>
+            <label for="borderInput" style="display:inline;">Border epoch 0</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" class="urlers" id="gaiaInput">
+            <label for="gaiaInput" style="display:inline;">Gaia eDR3 overlay</label>
+          </div>
+
+          <div class="subsettings">
+            <div class="row">
+              <input type="checkbox" class="resetters" id="diffInput" checked>
+              <label for="diffInput" style="display:inline;">Difference imaging</label>
+            </div>
+            <div class="sliderrow" id="diffWindowRow" style="display:none">
+              <label for="diffWindowValue">
+                Exclusion window (<span id="diffWindowValue"></span> yrs)
+              </label>
+              <div id="diffWindowInput"></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p><i>HardTofind project interface.</i></p>
+        </div>
+      </div><!-- /tabSettingsDiv -->
+
+      <div id="tabLinksDiv" class="tabBody" hidden>
+        <div class="row">
+          <a id="legacySurvey" target="_blank"
+             href="http://legacysurvey.org/viewer">LegacySurvey Sky Viewer</a>
+          <a id="simbad" target="_blank"
+             href="http://simbad.u-strasbg.fr/simbad/sim-fcoo">Simbad</a>
+          <a id="vizier" target="_blank"
+             href="http://vizier.u-strasbg.fr/viz-bin/VizieR">Vizier</a>
+          <label for="zooiSubjects">Nearest Zooniverse Subjects:</label>
+          <p style="margin:0;padding:0;" id="zooiSubjects">...</p>
+        </div>
+      </div>
+
+      <div id="tabHelpDiv" class="tabBody" hidden>
+        <h1>Help</h1>
+        <p>HardTofind is designed for quick visualization of moving celestial
+           bodies across multiple missions like WISE and SPHEREx.</p>
+        <h2>Missions</h2>
+        <ul>
+          <li><strong>WISE / unWISE</strong> – bandas W1 (3.4 µm) e W2 (4.6 µm).</li>
+          <li><strong>SPHEREx</strong> – 6 canais espectrais de 0.75 a 5.0 µm (CH1–CH6).</li>
+        </ul>
+      </div>
+
+      <div id="tabAboutDiv" class="tabBody" hidden>
+        <h1>About</h1>
+        <p style="margin-top:2px;">
+          Images sourced by unWISE, SPHEREx, and Pan-STARRS.
+        </p>
+      </div>
+    </div><!-- /nav-left -->
+
+    <div id="epoch-legend">
+      <p id="epoch-legend-value"></p>
+    </div>
+
+    <div id="image-field">
+      <p id="verValue">Loading...</p>
+      <div id="image">
+        <div id="border">
+          <canvas title="Click and drag to open a new cutout in another tab"
+                  id="daCanvas"></canvas>
+          <canvas id="overlayCanvas"></canvas>
+        </div>
+      </div>
+      <a id="pawnstarsLink" href="https://ps1images.stsci.edu/cgi-bin/ps1cutouts" target="_blank">
+        <div id="pawnstars"></div>
+      </a>
+    </div>
+
+    <!-- logic.js carregado por último para garantir que o DOM esteja pronto -->
+    <script src="static/logic.js"></script>
+  </body>
+</html>
