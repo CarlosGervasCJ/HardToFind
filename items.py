@@ -91,7 +91,7 @@ def _get_epochs_array(results):
 def find_closest_record(
     target_ra: float,
     target_dec: float,
-    collection: str = "spherex_dr1",  # Atualizado para DR1 (padrão ativo)
+    collection: str = "spherex_dr1",
     search_radius_arcsec: float = 60.0,
     band=None,
     band_alias_map: dict = None,
@@ -120,12 +120,7 @@ def find_closest_record(
             "message": f"Nenhum registro bruto retornado pelo IRSA SIA para a coleção '{collection}' neste raio e coordenadas."
         }
 
-    # Diagnóstico pré-filtro das épocas existentes no resultado bruto
-    epoch_col, epochs = _get_epochs_array(results)
-    min_found_mjd = float(epochs.min()) if epochs is not None and len(epochs) > 0 else None
-    max_found_mjd = float(epochs.max()) if epochs is not None and len(epochs) > 0 else None
-
-    # Aplicação de filtros de banda
+    # 1. Aplicação de filtros de banda primeiro
     if bands is not None:
         band_col = _detect_column(
             results,
@@ -143,7 +138,12 @@ def find_closest_record(
                     "message": f"Registros encontrados, mas nenhum na banda solicitada '{band}'."
                 }
 
-    # Aplicação de filtros de época (se definidos)
+    # 2. Extração de épocas APÓS o filtro de banda (garante o alinhamento de dimensões)
+    epoch_col, epochs = _get_epochs_array(results)
+    min_found_mjd = float(epochs.min()) if epochs is not None and len(epochs) > 0 else None
+    max_found_mjd = float(epochs.max()) if epochs is not None and len(epochs) > 0 else None
+
+    # 3. Aplicação de filtros de época (se definidos)
     if (epoch_min is not None or epoch_max is not None) and epochs is not None:
         mask = np.ones(len(results), dtype=bool)
         if epoch_min is not None:
@@ -217,11 +217,7 @@ def search_spherex():
         dec        = float(request.args.get("dec"))
         radius     = float(request.args.get("radius", 60.0))
         band       = request.args.get("band", "d1")
-        
-        # Agora o padrão é 'spherex_dr1' (Data Release 1 oficial ativo)
         collection = request.args.get("collection", "spherex_dr1")
-        
-        # Período ('2025-inicio', '2026-recente' ou 'all')
         period     = request.args.get("period", "all")
 
         if period not in EPOCH_PRESETS:
