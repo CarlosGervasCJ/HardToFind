@@ -1,13 +1,13 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "main.py",
-      "use": "@vercel/python"
+  "functions": {
+    "main.py": {
+      "maxDuration": 60
     }
-  ],
-  "rewrites": [
-    { "source": "/static/(.*)", "destination": "/static/$1" },
-    { "source": "/(.*)",        "destination": "/main.py"   }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "main.py"
+    }
   ]
 }
