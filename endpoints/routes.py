@@ -11,11 +11,15 @@ from image_processing import apply_asinh_stretch
 api_bp = Blueprint("api", __name__)
 
 
-from flask import render_template
+# ---------------------------------------------------------------------------
+# GET /
+# ---------------------------------------------------------------------------
 
 @api_bp.get("/")
 def index():
+    from flask import render_template
     return render_template("visualizer.html")
+
 
 # ---------------------------------------------------------------------------
 # GET /missions
@@ -23,18 +27,8 @@ def index():
 
 @api_bp.get("/missions")
 def get_missions():
-    """
-    Retorna a lista de missões registradas e as bandas disponíveis em cada uma.
-
-    Resposta:
-        {
-          "missions": [
-            {"name": "wise",    "bands": ["W1", "W2", "W1+W2"]},
-            {"name": "spherex", "bands": ["CH1", ..., "CH6"]}
-          ]
-        }
-    """
-    from main import registry
+    from main import get_registry
+    registry = get_registry()
 
     missions = [
         {"name": name, "bands": registry.get(name).AVAILABLE_BANDS}
@@ -49,13 +43,8 @@ def get_missions():
 
 @api_bp.get("/tiles")
 def get_tiles():
-    """
-    Retorna metadados dos tiles/epochs que cobrem (ra, dec).
-
-    Parâmetros obrigatórios : ra, dec
-    Parâmetro opcional      : mission (default="wise")
-    """
-    from main import registry
+    from main import get_registry
+    registry = get_registry()
 
     ra      = request.args.get("ra",      type=float)
     dec     = request.args.get("dec",     type=float)
@@ -96,13 +85,8 @@ def get_tiles():
 
 @api_bp.get("/cutout")
 def get_cutout():
-    """
-    Retorna uma imagem recortada como PNG base64.
-
-    Parâmetros obrigatórios : ra, dec, size, coadd_id, epoch, band
-    Parâmetros opcionais    : mission (default="wise"), stretch (default=true)
-    """
-    from main import registry
+    from main import get_registry
+    registry = get_registry()
 
     ra       = request.args.get("ra",       type=float)
     dec      = request.args.get("dec",      type=float)
@@ -145,10 +129,8 @@ def get_cutout():
 
 @api_bp.get("/xref")
 def get_xref():
-    """
-    Retorna os IDs de sujeitos Zooniverse próximos à posição (ra, dec).
-    """
-    from main import xref
+    from main import get_xref
+    xref = get_xref()
 
     ra  = request.args.get("ra",  type=float)
     dec = request.args.get("dec", type=float)
