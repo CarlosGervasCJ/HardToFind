@@ -26,11 +26,11 @@ EPOCH_PRESETS = {
     "2025": {
         "label": "Ano de 2025",
         "epoch_min": 60676.0,  # 2025-01-01
-        "epoch_max": 61039.0,  # 2025-12-31
+        "epoch_max": 61040.0,  # 2025-12-31
     },
     "2026": {
         "label": "2026 Mais Recente",
-        "epoch_min": 61040.0,  # 2026-01-01
+        "epoch_min": 61041.0,  # 2026-01-01
         "epoch_max": 61500.0,  # Período recente
     },
     "all": {
