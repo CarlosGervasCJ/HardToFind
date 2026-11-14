@@ -3,12 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>HardTofind - Celestial Body Visualization</title>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="static/style.css">
-    <script src="https://ajax.googleapis.com/apis/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://malsup.github.io/jquery.blockUI.js"></script>
-    <script src="static/logic.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="static/flash3-theme.css">
   </head>
   <body>
     <div id="nav-left">
@@ -29,11 +25,6 @@
           <input type="text" class="resetters" id="locInput">
         </div>
 
-        <!-- ================================================================
-             Seletor de missão
-             As <option>s são populadas dinamicamente pelo JS via GET /missions.
-             As opções estáticas abaixo servem como fallback caso /missions falhe.
-             ================================================================ -->
         <div class="row" id="missionRow">
           <select class="resetters" id="missionInput">
             <option selected value="wise">WISE / unWISE</option>
@@ -47,12 +38,6 @@
           <label for="sizeInput" style="display:inline;">Field of View (arcseconds)</label>
         </div>
 
-        <!-- ================================================================
-             Seletor de banda
-             Populado dinamicamente ao selecionar uma missão.
-             WISE  : W1 | W2 | W1+W2
-             SPHEREx: CH1 … CH6
-             ================================================================ -->
         <div class="row" id="bandRow">
           <select class="resetters" id="bandInput">
             <!-- preenchido por ws.updateBandOptions() em logic.js -->
@@ -155,7 +140,7 @@
         <div>
           <p><i>HardTofind project interface.</i></p>
         </div>
-      </div><!-- /tabSettingsDiv -->
+      </div>
 
       <div id="tabLinksDiv" class="tabBody" hidden>
         <div class="row">
@@ -187,7 +172,7 @@
           Images sourced by unWISE, SPHEREx, and Pan-STARRS.
         </p>
       </div>
-    </div><!-- /nav-left -->
+    </div>
 
     <div id="epoch-legend">
       <p id="epoch-legend-value"></p>
@@ -207,7 +192,11 @@
       </a>
     </div>
 
-    <!-- logic.js carregado por último para garantir que o DOM esteja pronto -->
+    <!-- Scripts carregados no fim do body e na ordem correcta -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://malsup.github.io/jquery.blockUI.js"></script>
+    <script src="static/flash3.js"></script>
     <script src="static/logic.js"></script>
   </body>
 </html>
