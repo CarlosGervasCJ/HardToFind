@@ -1,68 +1,34 @@
-# main.py
-from flask import Flask
+import os
 
-from endpoints.routes import api_bp
+# Força o diretório HOME para /tmp (Essencial para o Astropy na Vercel)
+os.environ["HOME"] = "/tmp"
 
-# ---------------------------------------------------------------------------
-# Inicialização do Flask
-# ---------------------------------------------------------------------------
+from flask import Flask, jsonify
+from flask_cors import CORS  # <--- Importante
+from items import bp
+
+# Inicializa o Flask diretamente para compatibilidade total com a Vercel
 app = Flask(__name__)
-app.config["PROPAGATE_EXCEPTIONS"] = True
 
-# ---------------------------------------------------------------------------
-# Serviços com lazy initialization — só carregados no primeiro pedido,
-# evitando FileNotFoundError na importação pelo Vercel.
-# ---------------------------------------------------------------------------
-_registry = None
-_xref = None
+# Habilita o CORS para permitir requisições de outras origens (como o front-end local ou web)
+CORS(app)
+
+# Registra o Blueprint de itens e buscas astronômicas
+app.register_blueprint(bp)
 
 
-def get_registry():
-    global _registry
-    if _registry is None:
-        from missions import (
-            MissionRegistry,
-            S3Manager,
-            SpherexMissionAdapter,
-            WiseMissionAdapter,
-        )
-        s3_mgr = S3Manager()
-        _registry = MissionRegistry()
-        _registry.register(
-            "wise",
-            WiseMissionAdapter(
-                index_file="tr_neo7_index-mjd-forward.fits",
-                wcs_file="tr_neo4_wcs_sorted.csv",
-                s3_manager=s3_mgr,
-            ),
-        )
-        _registry.register(
-            "spherex",
-            SpherexMissionAdapter(
-                index_file="spherex_index.fits",
-                wcs_file="spherex_wcs.csv",
-                s3_manager=s3_mgr,
-                bucket_prefix="spherex/data",  # ajustar após confirmar o bucket real
-            ),
-        )
-    return _registry
+@app.get("/")
+def read_root():
+  return jsonify(
+      {
+          "status": "online",
+          "message": "API SPHEREx rodando com sucesso na Vercel!",
+          "endpoint_busca": (
+              "/api/search-spherex?ra=269.452083&dec=4.693333&band=d1"
+          ),
+      }
+  )
 
 
-def get_xref():
-    global _xref
-    if _xref is None:
-        from spatial import CoordinateLookup
-        _xref = CoordinateLookup("wsubcache.csv")
-    return _xref
-
-
-# ---------------------------------------------------------------------------
-# Registo do Blueprint
-# ---------------------------------------------------------------------------
-app.register_blueprint(api_bp)
-
-# ---------------------------------------------------------------------------
-# Ponto de entrada local
-# ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+  app.run(debug=True, host="0.0.0.0", port=5001)
