@@ -91,8 +91,8 @@ def _get_epochs_array(results):
 def find_closest_record(
     target_ra: float,
     target_dec: float,
-    collection: str = "spherex_qr2",
-    search_radius_arcsec: float = 30.0,
+    collection: str = "spherex_dr1",  # Atualizado para DR1 (padrão ativo)
+    search_radius_arcsec: float = 60.0,
     band=None,
     band_alias_map: dict = None,
     epoch_min: float = None,
@@ -115,7 +115,10 @@ def find_closest_record(
 
     total = len(results)
     if total == 0:
-        return {"error_type": "no_records_found_at_all", "message": "Nenhum registro bruto retornado pelo IRSA SIA para este raio e coordenadas."}
+        return {
+            "error_type": "no_records_found_at_all", 
+            "message": f"Nenhum registro bruto retornado pelo IRSA SIA para a coleção '{collection}' neste raio e coordenadas."
+        }
 
     # Diagnóstico pré-filtro das épocas existentes no resultado bruto
     epoch_col, epochs = _get_epochs_array(results)
@@ -212,11 +215,13 @@ def search_spherex():
     try:
         ra         = float(request.args.get("ra"))
         dec        = float(request.args.get("dec"))
-        radius     = float(request.args.get("radius", 60.0))  # Raio ampliado para 60" para maior assertividade inicial
+        radius     = float(request.args.get("radius", 60.0))
         band       = request.args.get("band", "d1")
-        collection = request.args.get("collection", "spherex_qr2")
         
-        # Parâmetro de período ('2025-inicio', '2026-recente' ou 'all')
+        # Agora o padrão é 'spherex_dr1' (Data Release 1 oficial ativo)
+        collection = request.args.get("collection", "spherex_dr1")
+        
+        # Período ('2025-inicio', '2026-recente' ou 'all')
         period     = request.args.get("period", "all")
 
         if period not in EPOCH_PRESETS:
@@ -238,7 +243,6 @@ def search_spherex():
             epoch_max=preset["epoch_max"],
         )
 
-        # Se a função retornou um dicionário de erro detalhado
         if isinstance(result, dict) and "error_type" in result:
             return jsonify({
                 "status": "error",
