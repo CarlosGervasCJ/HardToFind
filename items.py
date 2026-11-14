@@ -20,13 +20,13 @@ BAND_ALIASES = {
 }
 
 # ---------------------------------------------------------------------------
-# Períodos Restritos (2025 Início, 2026 Recente e Todos) em MJD
+# Períodos Ajustados com base na disponibilidade real do IRSA (MJD)
 # ---------------------------------------------------------------------------
 EPOCH_PRESETS = {
-    "2025-inicio": {
-        "label": "Início de 2025 (Jan - Abr 2025)",
+    "2025": {
+        "label": "Ano de 2025 (Abr - Dez 2025)",
         "epoch_min": 60676.0,  # 2025-01-01
-        "epoch_max": 60795.0,  # 2025-04-30
+        "epoch_max": 61040.0,  # 2025-12-31 (Cobre a faixa 60790 - 60998)
     },
     "2026-recente": {
         "label": "2026 Mais Recente (Jan 2026 em diante)",
@@ -138,7 +138,7 @@ def find_closest_record(
                     "message": f"Registros encontrados, mas nenhum na banda solicitada '{band}'."
                 }
 
-    # 2. Extração de épocas APÓS o filtro de banda (garante o alinhamento de dimensões)
+    # 2. Extração de épocas APÓS o filtro de banda
     epoch_col, epochs = _get_epochs_array(results)
     min_found_mjd = float(epochs.min()) if epochs is not None and len(epochs) > 0 else None
     max_found_mjd = float(epochs.max()) if epochs is not None and len(epochs) > 0 else None
@@ -218,7 +218,9 @@ def search_spherex():
         radius     = float(request.args.get("radius", 60.0))
         band       = request.args.get("band", "d1")
         collection = request.args.get("collection", "spherex_dr1")
-        period     = request.args.get("period", "all")
+        
+        # Agora utilize period=2025 para abranger os dados encontrados (MJD 60790 - 60998)
+        period     = request.args.get("period", "2025")
 
         if period not in EPOCH_PRESETS:
             return jsonify({
