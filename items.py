@@ -20,19 +20,24 @@ BAND_ALIASES = {
 }
 
 # ---------------------------------------------------------------------------
-# Períodos Restritos (2025 Início e 2026 Mais Recente) em MJD
+# Períodos Restritos (2025 Início, 2026 Recente e Todos) em MJD
 # ---------------------------------------------------------------------------
 EPOCH_PRESETS = {
     "2025-inicio": {
         "label": "Início de 2025 (Jan - Abr 2025)",
-        "epoch_min": None,  # 2025-01-01
-        "epoch_max": None,  # 2025-04-30
+        "epoch_min": 60676.0,  # 2025-01-01
+        "epoch_max": 60795.0,  # 2025-04-30
     },
     "2026-recente": {
         "label": "2026 Mais Recente (Jan 2026 em diante)",
-        "epoch_min": None,  # 2026-01-01
-        "epoch_max": None,  # Período recente
+        "epoch_min": 61041.0,  # 2026-01-01
+        "epoch_max": 61500.0,  # Período recente
     },
+    "all": {
+        "label": "Todos os períodos disponíveis",
+        "epoch_min": None,
+        "epoch_max": None,
+    }
 }
 
 
@@ -64,56 +69,30 @@ def _detect_column(table, candidates):
     return None
 
 
-def _apply_filters(results, bands=None, epoch_min=None, epoch_max=None):
-    mask = np.ones(len(results), dtype=bool)
-
-    # --- Filtro de Banda -------------------------------------------------
-    if bands is not None:
-        band_col = _detect_column(
-            results,
-            ["energy_bandpassname", "band", "bandpass", "filter", "em_band"],
-        )
-        if band_col is not None:
-            raw_vals = np.array([str(v).strip().lower() for v in results[band_col]])
-            band_mask = np.zeros(len(results), dtype=bool)
-            for b in bands:
-                band_mask |= raw_vals == b.lower()
-            mask &= band_mask
-
-    # --- Filtro de Época (Tratamento robusto para MJD / Datas ISO) ------
-    if epoch_min is not None or epoch_max is not None:
-        epoch_col = _detect_column(
-            results, ["t_min", "t_max", "t_mid", "epoch", "mjd_obs", "date_obs"]
-        )
-        if epoch_col is not None:
-            raw_epochs = results[epoch_col]
-            try:
-                # Tenta conversão direta se forem valores numéricos (MJD)
-                epochs = np.array(raw_epochs, dtype=float)
-            except (ValueError, TypeError):
-                # Se forem strings de data (ex: ISO date_obs), converte via Astropy Time
-                try:
-                    t = Time(raw_epochs)
-                    epochs = t.mjd
-                except Exception:
-                    epochs = np.zeros(len(results))
-
-            if epoch_min is not None:
-                mask &= epochs >= epoch_min
-            if epoch_max is not None:
-                mask &= epochs <= epoch_max
-
-    return results[mask]
+def _get_epochs_array(results):
+    epoch_col = _detect_column(
+        results, ["t_min", "t_max", "t_mid", "epoch", "mjd_obs", "date_obs"]
+    )
+    if epoch_col is None:
+        return None, None
+    
+    raw_epochs = results[epoch_col]
+    try:
+        epochs = np.array(raw_epochs, dtype=float)
+    except (ValueError, TypeError):
+        try:
+            t = Time(raw_epochs)
+            epochs = t.mjd
+        except Exception:
+            epochs = np.zeros(len(results))
+    return epoch_col, epochs
 
 
-# ---------------------------------------------------------------------------
-# Função Principal — Alta Assertividade, Raio Otimizado e Métricas de Zoom
-# ---------------------------------------------------------------------------
 def find_closest_record(
     target_ra: float,
     target_dec: float,
     collection: str = "spherex_qr2",
-    search_radius_arcsec: float = 30.0,  # Raio reduzido para maior precisão astrométrica
+    search_radius_arcsec: float = 30.0,
     band=None,
     band_alias_map: dict = None,
     epoch_min: float = None,
@@ -127,7 +106,6 @@ def find_closest_record(
     alias_map = band_alias_map or BAND_ALIASES
     bands = _parse_band_filter(band, alias_map)
 
-    # Força URL direta do serviço SIA do IRSA
     Irsa.sia_url = "https://irsa.ipac.caltech.edu/SIA"
 
     results = Irsa.query_sia(
@@ -137,24 +115,51 @@ def find_closest_record(
 
     total = len(results)
     if total == 0:
-        return None
+        return {"error_type": "no_records_found_at_all", "message": "Nenhum registro bruto retornado pelo IRSA SIA para este raio e coordenadas."}
 
-    # Aplicação de filtros de banda e período
-    any_filter = any(x is not None for x in [bands, epoch_min, epoch_max])
-    if any_filter:
-        results = _apply_filters(
+    # Diagnóstico pré-filtro das épocas existentes no resultado bruto
+    epoch_col, epochs = _get_epochs_array(results)
+    min_found_mjd = float(epochs.min()) if epochs is not None and len(epochs) > 0 else None
+    max_found_mjd = float(epochs.max()) if epochs is not None and len(epochs) > 0 else None
+
+    # Aplicação de filtros de banda
+    if bands is not None:
+        band_col = _detect_column(
             results,
-            bands=bands,
-            epoch_min=epoch_min,
-            epoch_max=epoch_max,
+            ["energy_bandpassname", "band", "bandpass", "filter", "em_band"],
         )
+        if band_col is not None:
+            raw_vals = np.array([str(v).strip().lower() for v in results[band_col]])
+            band_mask = np.zeros(len(results), dtype=bool)
+            for b in bands:
+                band_mask |= raw_vals == b.lower()
+            results = results[band_mask]
+            if len(results) == 0:
+                return {
+                    "error_type": "band_filtered_out", 
+                    "message": f"Registros encontrados, mas nenhum na banda solicitada '{band}'."
+                }
+
+    # Aplicação de filtros de época (se definidos)
+    if (epoch_min is not None or epoch_max is not None) and epochs is not None:
+        mask = np.ones(len(results), dtype=bool)
+        if epoch_min is not None:
+            mask &= epochs >= epoch_min
+        if epoch_max is not None:
+            mask &= epochs <= epoch_max
+        
+        results = results[mask]
         if len(results) == 0:
-            return None
+            return {
+                "error_type": "epoch_filtered_out",
+                "min_available_mjd": min_found_mjd,
+                "max_available_mjd": max_found_mjd,
+                "message": f"Filtro temporal eliminou todos os registros. Faixa disponível nesta consulta (MJD): [{min_found_mjd}, {max_found_mjd}]"
+            }
 
     ra_col  = _detect_column(results, ["ra", "s_ra"])  or "s_ra"
     dec_col = _detect_column(results, ["dec", "s_dec"]) or "s_dec"
 
-    # Filtro opcional de tolerância angular
     if coord_tol_deg is not None:
         rec_coords = SkyCoord(
             ra=np.array(results[ra_col],  dtype=float) * u.deg,
@@ -164,10 +169,9 @@ def find_closest_record(
         seps = target_coord.separation(rec_coords).deg
         coord_mask = seps <= coord_tol_deg
         if coord_mask.sum() == 0:
-            return None
+            return {"error_type": "tolerance_filtered_out", "message": "Nenhum registro dentro da tolerância angular."}
         results = results[coord_mask]
 
-    # Cálculo exato para encontrar o registro mais próximo (maior assertividade)
     rec_coords = SkyCoord(
         ra=np.array(results[ra_col],  dtype=float) * u.deg,
         dec=np.array(results[dec_col], dtype=float) * u.deg,
@@ -178,7 +182,6 @@ def find_closest_record(
     record        = results[closest_index]
     best_sep_arcsec = float(separations[closest_index].arcsec)
 
-    # Serialização segura para JSON
     record_dict = {}
     for col in results.colnames:
         val = record[col]
@@ -186,27 +189,14 @@ def find_closest_record(
             val = val.item()
         record_dict[col] = val
 
-    # Adiciona métricas de assertividade e recomendações de Zoom / FOV para o visualizador
     record_dict["separation_arcsec"] = round(best_sep_arcsec, 3)
     record_dict["recommended_fov_arcmin"] = max(0.5, round(search_radius_arcsec / 20.0, 2))
 
-    # --- Normalização e URL FITS / Firefly Client ---
     fits_col = _detect_column(results, ["access_url", "get_fits", "file_url", "url", "acswave"])
     if fits_col and fits_col in record_dict:
         url_val = record_dict[fits_col]
-        
-        if url_val and str(url_val).endswith(".tbl") and collection == "wise_allwise":
-            base_dir = url_val.rsplit("/", 1)[0]
-            obs_id = record_dict.get("obs_id", "")
-            band_name = record_dict.get("energy_bandpassname", "w1").lower()
-            if not band_name.startswith("w"):
-                band_name = "w1"
-            
-            record_dict["fits_url"] = f"{base_dir}/{obs_id}-{band_name}-int-3.fits"
-            record_dict["is_table_format"] = False
-        else:
-            record_dict["fits_url"] = url_val
-            record_dict["is_table_format"] = str(url_val).endswith(".tbl") if url_val else False
+        record_dict["fits_url"] = url_val
+        record_dict["is_table_format"] = str(url_val).endswith(".tbl") if url_val else False
     else:
         record_dict["fits_url"] = None
         record_dict["is_table_format"] = False
@@ -217,34 +207,17 @@ def find_closest_record(
 # ---------------------------------------------------------------------------
 # Rotas Flask da API
 # ---------------------------------------------------------------------------
-@bp.get("/api/data")
-def get_sample_data():
-    return jsonify(
-        {
-            "data": [
-                {"id": 1, "name": "Sample Item 1", "value": 100},
-                {"id": 2, "name": "Sample Item 2", "value": 200},
-                {"id": 3, "name": "Sample Item 3", "value": 300},
-            ],
-            "total": 3,
-            "timestamp": "2024-01-01T00:00:00Z",
-        }
-    )
-
-
-# ── Endpoint SPHEREx com Seletor de Períodos Restritos ─────────────────────
 @bp.get("/api/search-spherex")
 def search_spherex():
     try:
         ra         = float(request.args.get("ra"))
         dec        = float(request.args.get("dec"))
-        radius     = float(request.args.get("radius", 30.0))  # Raio padrão otimizado (30")
+        radius     = float(request.args.get("radius", 60.0))  # Raio ampliado para 60" para maior assertividade inicial
         band       = request.args.get("band", "d1")
         collection = request.args.get("collection", "spherex_qr2")
         
-        # Parâmetro de período restrito às duas opções permitidas:
-        # '2025-inicio' ou '2026-recente'
-        period     = request.args.get("period", "2026-recente")
+        # Parâmetro de período ('2025-inicio', '2026-recente' ou 'all')
+        period     = request.args.get("period", "all")
 
         if period not in EPOCH_PRESETS:
             return jsonify({
@@ -253,8 +226,6 @@ def search_spherex():
             }), 400
 
         preset = EPOCH_PRESETS[period]
-        epoch_min = preset["epoch_min"]
-        epoch_max = preset["epoch_max"]
 
         result = find_closest_record(
             target_ra=ra,
@@ -263,15 +234,21 @@ def search_spherex():
             search_radius_arcsec=radius,
             band=band,
             band_alias_map=BAND_ALIASES,
-            epoch_min=epoch_min,
-            epoch_max=epoch_max,
+            epoch_min=preset["epoch_min"],
+            epoch_max=preset["epoch_max"],
         )
 
-        if result is None:
+        # Se a função retornou um dicionário de erro detalhado
+        if isinstance(result, dict) and "error_type" in result:
             return jsonify({
-                "status": "error", 
-                "message": f"Nenhum registro encontrado para o período '{preset['label']}' com os parâmetros informados."
+                "status": "error",
+                "error_type": result["error_type"],
+                "message": result["message"],
+                "details": result.get("details", {})
             }), 404
+
+        if result is None:
+            return jsonify({"status": "error", "message": "Nenhum registro encontrado."}), 404
 
         return jsonify({
             "status": "success",
