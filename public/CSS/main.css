@@ -20,12 +20,12 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;
   background: var(--space-black);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 13px; /* Fonte ligeiramente reduzida conforme pedido */
+  font-size: 13px;
   -webkit-font-smoothing: antialiased;
+  /* overflow:hidden removido — scroll permitido em viewports pequenos */
 }
 
 /* TOP BAR */
@@ -125,7 +125,13 @@ html, body {
 #main {
   display:flex;
   height: calc(100vh - 52px);
-  overflow:hidden;
+  overflow: hidden; /* desktop: sem scroll, colunas preenchem o viewport */
+}
+
+/* Em viewports estreitos, habilitar scroll vertical no body */
+@media (max-width: 1100px) {
+  html, body { overflow-y: auto; }
+  #main { height: auto; overflow: visible; }
 }
 
 /* Coluna 1: WiseView */
@@ -417,11 +423,59 @@ html, body {
 
 /* Responsivo */
 @media (max-width: 1100px) {
-  #main { flex-direction: column; height: auto; overflow-y: auto; }
-  #wv-col { height: 40vh; flex: none; border-right: none; border-bottom: 1px solid var(--border); }
-  #preset-col { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
-  #spherex-col { width: 100%; min-width: unset; height: auto; min-height: 500px; }
-  #fireflyArea { height: 340px; flex: none; }
-  #spec-body { grid-template-columns: 1fr; }
-  #spec-info { border-right: none; border-bottom: 1px solid var(--border); max-height: 160px; }
+  #main { flex-direction: column; }
+
+  /* WiseView: altura fixa para não colapsar */
+  #wv-col {
+    height: 44vh;
+    min-height: 260px;
+    flex: none;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Coluna de presets: largura total, sem scroll interno forçado */
+  #preset-col {
+    width: 100%;
+    min-width: unset;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow: visible;
+    height: auto;
+  }
+  #preset-body {
+    overflow-y: visible;
+    max-height: none;
+  }
+
+  /* Coluna SPHEREx: cresce conforme conteúdo */
+  #spherex-col {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    min-height: 520px;
+    overflow: visible;
+  }
+
+  /* Firefly: altura fixa razoável */
+  #fireflyArea {
+    height: 340px;
+    flex: none;
+    overflow: hidden;
+  }
+
+  /* Espectroscópio: altura automática */
+  #spectrometer { overflow: visible; }
+  #spec-body {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+  }
+  #spec-info {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: none;
+    overflow: visible;
+  }
+  #spec-chart { min-height: 160px; }
 }
