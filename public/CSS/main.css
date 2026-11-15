@@ -1,5 +1,5 @@
 :root {
-  --space-black:    #020609;
+  --space-black:     #020609;
   --cosmic-emerald: #10b981;
   --cyan-glow:      #06b6d4;
   --amber-gold:     #f59e0b;
@@ -20,7 +20,7 @@
 
 html, body {
   height: 100%;
-  overflow: hidden; /* desktop: app ocupa exactamente o viewport */
+  overflow: hidden; /* desktop: app ocupa exatamente o viewport */
   background: var(--space-black);
   color: var(--text);
   font-family: var(--font-sans);
@@ -127,7 +127,6 @@ html, body {
   height: calc(100vh - 52px);
   overflow: hidden; /* desktop: sem scroll, colunas preenchem o viewport */
 }
-
 
 /* Coluna 1: WiseView */
 #wv-col {
@@ -422,15 +421,36 @@ html, body {
   html, body { overflow: auto; height: auto; }
   #main { flex-direction: column; height: auto; overflow: visible; }
 
-  /* WiseView: altura fixa, iframe sem margin negativo no mobile */
+  /* WiseView Container no Mobile */
   #wv-col {
     height: 44vh;
     min-height: 260px;
     flex: none;
     border-right: none;
     border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden; /* Corta tudo que for empurrado para fora */
   }
 
+  /* 
+   * ===================================================================
+   * ÁREA DE ALINHAMENTO DO WISEVIEW (MOBILE)
+   * ===================================================================
+   * Ajuste o valor dentro de translateX(...) ou translateY(...) para 
+   * esconder a barra de ferramentas desejada.
+   */
+  #wvFrame {
+    /* OPÇÃO A: Se a barra do WiseView fica na ESQUERDA: */
+    transform: translateX(-240px); /* <<< ALINHE AQUI: Aumente/diminua o valor (ex: -200px, -260px) até sumir a sidebar */
+    width: calc(100% + 240px) !important; /* <<< Mantenha igual ao valor absoluto do translateX para preencher a tela */
+    
+    /* OPÇÃO B: Se a barra do WiseView fica no TOPO (descomente e comente as linhas acima se for o caso): */
+    /* transform: translateY(-50px); */ /* <<< ALINHE AQUI: Ajuste a altura em px da barra superior */
+    /* height: calc(100% + 50px) !important; */
+    
+    position: relative;
+  }
+  /* =================================================================== */
 
   /* Coluna de presets: largura total, sem scroll interno forçado */
   #preset-col {
