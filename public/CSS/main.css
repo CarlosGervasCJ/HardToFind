@@ -142,7 +142,7 @@ html, body {
 #wvFrame { 
   border:none; 
   display:block; 
-  width: 1980px; /* Altere aqui caso precise de mais ou menos largura no desktop */
+  width: 1890px; /* Altere aqui caso precise de mais ou menos largura no desktop */
 }
 
 /* Coluna 2: Presets & Alvos */
