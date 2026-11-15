@@ -143,7 +143,7 @@ html, body {
   border: none; 
   display: block; 
   /* Altere o valor de -150px para esconder mais ou menos a barra lateral no desktop */
-  transform: translateX(-100px); 
+  transform: translateX(-200px); 
   width: calc(1890px + 150px) !important; /* Deve somar o mesmo valor absoluto do translateX acima */
 }
 
