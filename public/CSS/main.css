@@ -144,7 +144,7 @@ html, body {
   display: block; 
   /* Altere o valor de -150px para esconder mais ou menos a barra lateral no desktop */
   transform: translateX(-200px); 
-  width: calc(1890px + 150px) !important; /* Deve somar o mesmo valor absoluto do translateX acima */
+  width: calc(1890px + 200px) !important; /* Deve somar o mesmo valor absoluto do translateX acima */
 }
 
 /* Coluna 2: Presets & Alvos */
