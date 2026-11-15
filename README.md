@@ -1,4 +1,4 @@
-# Documentação da API SPHEREx
+# Documentação da API HardToFind
 
 *Referência técnica completa para integração e uso do endpoint de busca astronômica*
 
@@ -6,7 +6,7 @@
 
 ## Visão Geral
 
-A API SPHEREx (estruturada em Flask) atua como um intermediário inteligente para consultar bases de dados astronômicas do IRSA (Infrared Science Archive), incluindo o levantamento SPHEREx. Seu objetivo central é:
+A API HardToFinf (estruturada em Flask) atua como um intermediário inteligente para consultar bases de dados astronômicas do IRSA (Infrared Science Archive), incluindo o levantamento SPHEREx. Seu objetivo central é:
 
 - Receber **coordenadas celestes** (RA/Dec)
 - Filtrar dados por **bandas espectrais** e **períodos temporais**
