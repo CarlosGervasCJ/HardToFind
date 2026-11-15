@@ -422,13 +422,19 @@ html, body {
   html, body { overflow: auto; height: auto; }
   #main { flex-direction: column; height: auto; overflow: visible; }
 
-  /* WiseView: altura fixa para não colapsar */
+  /* WiseView: altura fixa, iframe sem margin negativo no mobile */
   #wv-col {
     height: 44vh;
     min-height: 260px;
     flex: none;
     border-right: none;
     border-bottom: 1px solid var(--border);
+  }
+  /* Cancelar o margin-left negativo que o JS aplica para esconder o menu do WiseView —
+     no mobile o clip já trata do overflow, não precisamos de deslocar o iframe */
+  #wvFrame {
+    margin-left: 0 !important;
+    width: 100% !important;
   }
 
   /* Coluna de presets: largura total, sem scroll interno forçado */
