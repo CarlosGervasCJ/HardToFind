@@ -20,7 +20,7 @@
 
 html, body {
   height: 100%;
-  overflow: hidden; /* desktop: app ocupa exatamente o viewport */
+  overflow: hidden;
   background: var(--space-black);
   color: var(--text);
   font-family: var(--font-sans);
@@ -125,7 +125,7 @@ html, body {
 #main {
   display:flex;
   height: calc(100vh - 52px);
-  overflow: hidden; /* desktop: sem scroll, colunas preenchem o viewport */
+  overflow: hidden;
 }
 
 /* Coluna 1: WiseView */
@@ -137,20 +137,19 @@ html, body {
 #wv-clip { position:absolute; inset:0; overflow:hidden; }
 
 /* ===================================================================
- * [DESKTOP] Ajuste do Iframe do WiseView no Desktop
+ * [DESKTOP] Ajuste da Sidebar do WiseView no Desktop
  * =================================================================== */
 #wvFrame { 
-  border:none; 
-  display:block; 
-  width: 1890px; /* Altere aqui caso precise de mais ou menos largura no desktop */
+  border: none; 
+  display: block; 
+  /* Altere o valor de -150px para esconder mais ou menos a barra lateral no desktop */
+  transform: translateX(-100px); 
+  width: calc(1890px + 150px) !important; /* Deve somar o mesmo valor absoluto do translateX acima */
 }
 
 /* Coluna 2: Presets & Alvos */
-/* ===================================================================
- * [DESKTOP] Ajuste da Largura da Coluna de Presets
- * =================================================================== */
 #preset-col {
-  width: 330px;       /* Altere aqui a largura padrão desta coluna no desktop */
+  width: 330px;
   min-width: 290px;
   display: flex;
   flex-direction: column;
@@ -240,11 +239,8 @@ html, body {
 }
 
 /* Coluna 3: SPHEREx */
-/* ===================================================================
- * [DESKTOP] Ajuste da Largura da Coluna SPHEREx
- * =================================================================== */
 #spherex-col {
-  width: 50%;         /* Altere a porcentagem que esta coluna ocupa da tela no desktop */
+  width: 50%;
   min-width: 320px;
   display:flex; flex-direction:column;
   overflow:hidden; position:relative;
@@ -453,15 +449,9 @@ html, body {
    * [MOBILE] Ocultar a barra lateral/topo do WiseView no Celular
    */
   #wvFrame {
-    /* Ajuste o valor abaixo (-240px) para cobrir exatamente a barra lateral do WiseView */
+    /* Ajuste o valor abaixo (-110px) para cobrir exatamente a barra lateral do WiseView */
     transform: translateX(-110px); 
-    width: calc(100% + 240px) !important; /* Mantenha o mesmo valor de compensação da largura */
-    
-    /* Se quisesse esconder o topo em vez da lateral, usaria:
-     * transform: translateY(-50px);
-     * height: calc(100% + 50px) !important;
-     */
-    
+    width: calc(100% + 240px) !important; /* Mantenha a compensação da largura */
     position: relative;
   }
 
