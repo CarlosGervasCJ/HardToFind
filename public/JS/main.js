@@ -11,15 +11,79 @@ const BAND_COLORS = {
 };
 
 const BAND_DATA = {
-  d1:{ label:'D1', wl:'0.75 – 1.10 µm', heading:'Near-Infrared Optical Boundary', desc:'Ideal for detecting low-mass stars, brown dwarfs, and young stellar objects.', flux:'142.5 mJy', snr:'31.8 σ', color:'#10b981', range:[0,17] },
-  d2:{ label:'D2', wl:'1.10 – 1.60 µm', heading:'H-Band Infrared Window', desc:'Deep analysis of distant galaxies and trans-Neptunian objects with methane reflectance.', flux:'188.2 mJy', snr:'38.4 σ', color:'#06b6d4', range:[17,34] },
-  d3:{ label:'D3', wl:'1.60 – 2.40 µm', heading:'K-Band Thermal Mapping', desc:'Sensitive to thermal emissions and molecular signatures of water vapor at solar system boundaries.', flux:'96.4 mJy',  snr:'27.1 σ', color:'#f59e0b', range:[34,51] },
-  d4:{ label:'D4', wl:'2.40 – 3.40 µm', heading:'Mid-IR Hydrocarbon Band', desc:'Crucial range for volatile organic compounds and parallax tracking of distant gas planets.', flux:'64.1 mJy',  snr:'22.5 σ', color:'#f78166', range:[51,68] },
-  d5:{ label:'D5', wl:'3.40 – 4.50 µm', heading:'Planet X Thermal Signature', desc:'Key frequency where cold gas giants exhibit blackbody emission peak at 35–40 K.', flux:'215.8 mJy', snr:'45.2 σ', color:'#bc8cff', range:[68,85] },
-  d6:{ label:'D6', wl:'4.50 – 5.00 µm', heading:'Deep Thermal Infrared Limit', desc:'Upper SPHEREx limit — cosmic background scanning and highly reddened source detection.', flux:'118.9 mJy', snr:'29.6 σ', color:'#38bdf8', range:[85,102] },
+  d1:{ label:'D1', wl:'0.75 – 1.10 µm', heading:{pt:'Fonte Ótica de Infravermelho Próximo', en:'Near-Infrared Optical Boundary'}, desc:{pt:'Ideal para detetagem de estrelas de baixa massa, anãs castanhas e objetos estelares jovens.', en:'Ideal for detecting low-mass stars, brown dwarfs, and young stellar objects.'}, flux:'142.5 mJy', snr:'31.8 σ', color:'#10b981', range:[0,17] },
+  d2:{ label:'D2', wl:'1.10 – 1.60 µm', heading:{pt:'Janela de Infravermelhos Banda H', en:'H-Band Infrared Window'}, desc:{pt:'Análise profunda de galáxias distantes e objetos transnetunianos com reflectância de metano.', en:'Deep analysis of distant galaxies and trans-Neptunian objects with methane reflectance.'}, flux:'188.2 mJy', snr:'38.4 σ', color:'#06b6d4', range:[17,34] },
+  d3:{ label:'D3', wl:'1.60 – 2.40 µm', heading:{pt:'Mapeamento Térmico Banda K', en:'K-Band Thermal Mapping'}, desc:{pt:'Sensível a emissões térmicas e assinaturas moleculares de vapor de água nos limites do sistema solar.', en:'Sensitive to thermal emissions and molecular signatures of water vapor at solar system boundaries.'}, flux:'96.4 mJy',  snr:'27.1 σ', color:'#f59e0b', range:[34,51] },
+  d4:{ label:'D4', wl:'2.40 – 3.40 µm', heading:{pt:'Banda de Hidrocarbonetos do Infravermelho Médio', en:'Mid-IR Hydrocarbon Band'}, desc:{pt:'Gama crucial para compostos orgânicos voláteis e rastreamento de paralaxe de planetas gasosos distantes.', en:'Crucial range for volatile organic compounds and parallax tracking of distant gas planets.'}, flux:'64.1 mJy',  snr:'22.5 σ', color:'#f78166', range:[51,68] },
+  d5:{ label:'D5', wl:'3.40 – 4.50 µm', heading:{pt:'Assinatura Térmica do Planeta X', en:'Planet X Thermal Signature'}, desc:{pt:'Frequência-chave onde gigantes gasosos frios exibem pico de emissão de corpo negro a 35–40 K.', en:'Key frequency where cold gas giants exhibit blackbody emission peak at 35–40 K.'}, flux:'215.8 mJy', snr:'45.2 σ', color:'#bc8cff', range:[68,85] },
+  d6:{ label:'D6', wl:'4.50 – 5.00 µm', heading:{pt:'Limite Profundo de Infravermelho Térmico', en:'Deep Thermal Infrared Limit'}, desc:{pt:'Limite superior do SPHEREx — varredura de fundo cósmico e deteção de fontes altamente avermelhadas.', en:'Upper SPHEREx limit — cosmic background scanning and highly reddened source detection.'}, flux:'118.9 mJy', snr:'29.6 σ', color:'#38bdf8', range:[85,102] },
 };
 
-/* Os 5 Presets Exatos com respetivas imagens */
+/* Sistema de Traduções Internas para Alternância (PT / EN) */
+let currentLang = 'pt'; // Inicia por padrão em Português
+
+const TRANSLATIONS = {
+  pt: {
+    nav_home: 'Início',
+    nav_band: 'Banda',
+    nav_radius: 'Raio (″)',
+    nav_blink: 'Blink (ms)',
+    nav_search: 'Pesquisar',
+    nav_config: 'Config. WiseView',
+    status_ready: 'pronto',
+    col2_subtitle: 'Alvos Astronómicos',
+    preset_select_label: 'Selecionar Alvo',
+    preset_default_option: '-- Escolher alvo pré-definido --',
+    image_placeholder: 'Fundo Preto / Pré-visualização',
+    card_type: 'Tipo',
+    card_fov: 'FOV Recomendado',
+    card_band: 'Banda Ideal',
+    card_flux: 'Fluxo Térmico',
+    btn_load_observatory: 'Carregar no Observatório',
+    btn_metadata: 'Metadados',
+    empty_title: 'Aguardando pesquisa',
+    empty_desc: 'Selecione um preset ou insira coordenadas e clique em Pesquisar',
+    spec_title: 'Espectroscópio',
+    spec_active_band: 'Banda activa',
+    spec_thermal_flux: 'Fluxo Térmico',
+    meta_panel_title: 'Metadados da observação',
+    btn_copy: 'copiar',
+    status_consulting: 'Consultando IRSA…',
+    status_irsa_down: 'IRSA indisponível',
+    status_missing_coords: 'RA e Dec são obrigatórios'
+  },
+  en: {
+    nav_home: 'Home',
+    nav_band: 'Band',
+    nav_radius: 'Radius (″)',
+    nav_blink: 'Blink (ms)',
+    nav_search: 'Search',
+    nav_config: 'WiseView Config',
+    status_ready: 'ready',
+    col2_subtitle: 'Astronomical Targets',
+    preset_select_label: 'Select Target',
+    preset_default_option: '-- Choose preset target --',
+    image_placeholder: 'Black Background / Preview',
+    card_type: 'Type',
+    card_fov: 'Recommended FOV',
+    card_band: 'Ideal Band',
+    card_flux: 'Thermal Flux',
+    btn_load_observatory: 'Load to Observatory',
+    btn_metadata: 'Metadata',
+    empty_title: 'Awaiting search',
+    empty_desc: 'Select a preset or enter coordinates and click Search',
+    spec_title: 'Spectrometer',
+    spec_active_band: 'Active band',
+    spec_thermal_flux: 'Thermal Flux',
+    meta_panel_title: 'Observation Metadata',
+    btn_copy: 'copy',
+    status_consulting: 'Consulting IRSA…',
+    status_irsa_down: 'IRSA unavailable',
+    status_missing_coords: 'RA and Dec are required'
+  }
+};
+
+/* Os 5 Presets com suporte a descrições dinâmicas PT/EN */
 const PRESETS = [
   {
     id: 'barnard',
@@ -27,7 +91,10 @@ const PRESETS = [
     ra: 269.45208, dec: 4.69333, band: 'd5', radius: 60, fov: '0.15°',
     type: 'Red Dwarf',
     flux: '142.5 mJy',
-    desc: "Red Dwarf with extreme proper motion across the sky.",
+    desc: {
+      pt: "Anã Vermelha com movimento próprio extremo através do céu.",
+      en: "Red Dwarf with extreme proper motion across the sky."
+    },
     image: 'images/barnard.jpg'
   },
   {
@@ -36,7 +103,10 @@ const PRESETS = [
     ra: 331.04375, dec: -56.78278, band: 'd3', radius: 60, fov: '0.20°',
     type: 'Brown Dwarf',
     flux: '188.2 mJy',
-    desc: "Binary Brown Dwarf System.",
+    desc: {
+      pt: "Sistema Binário de Anãs Castanhas.",
+      en: "Binary Brown Dwarf System."
+    },
     image: 'images/epsilon.jpg'
   },
   {
@@ -45,7 +115,10 @@ const PRESETS = [
     ra: 133.79513, dec: -7.24515, band: 'd5', radius: 60, fov: '0.10°',
     type: 'Sub-Brown Dwarf',
     flux: '92.4 mJy',
-    desc: "Sub-Brown Dwarf (Fast Moving).",
+    desc: {
+      pt: "Sub-Anã Castanha (Movimento Rápido).",
+      en: "Sub-Brown Dwarf (Fast Moving)."
+    },
     image: 'images/wise0855.jpg'
   },
   {
@@ -54,7 +127,10 @@ const PRESETS = [
     ra: 76.95642, dec: 30.40142, band: 'd4', radius: 60, fov: '0.10°',
     type: 'Variable Star',
     flux: '150.0 mJy',
-    desc: "Variable Star Systems.",
+    desc: {
+      pt: "Sistemas Estelares Variáveis.",
+      en: "Variable Star Systems."
+    },
     image: 'images/rw_aur.jpg'
   },
   {
@@ -63,7 +139,10 @@ const PRESETS = [
     ra: 248.16750, dec: 66.75500, band: 'd5', radius: 60, fov: '0.20°',
     type: 'Mira Variable',
     flux: '210.0 mJy',
-    desc: "Mira-type Pulsating Variable Star.",
+    desc: {
+      pt: "Estrela Variável Pulsante do tipo Mira.",
+      en: "Mira-type Pulsating Variable Star."
+    },
     image: 'images/r_dra.jpg'
   }
 ];
@@ -99,9 +178,12 @@ const targetFovEl    = document.getElementById('targetFov');
 const targetBandEl   = document.getElementById('targetBand');
 const targetFluxEl   = document.getElementById('targetFlux');
 const targetImgEl    = document.getElementById('targetImg');
+const langToggleBtn  = document.getElementById('langToggleBtn');
+const langLabel      = document.getElementById('langLabel');
 
 function initPresets() {
   if (!presetSelect) return;
+  presetSelect.innerHTML = `<option value="" disabled selected>${TRANSLATIONS[currentLang].preset_default_option}</option>`;
   PRESETS.forEach(p => {
     const opt = document.createElement('option');
     opt.value = p.id;
@@ -128,7 +210,7 @@ function initPresets() {
 function updateTargetCard(p) {
   targetNameEl.textContent   = p.name;
   targetCoordsEl.textContent = `RA: ${p.ra.toFixed(5)}° | Dec: ${(p.dec >= 0 ? '+' : '')}${p.dec.toFixed(5)}°`;
-  targetDescEl.textContent   = p.desc;
+  targetDescEl.textContent   = p.desc[currentLang] || p.desc.en;
   targetTypeEl.textContent   = p.type;
   targetFovEl.textContent    = p.fov;
   targetBandEl.textContent   = p.band.toUpperCase();
@@ -213,8 +295,8 @@ function setBand(bandKey) {
 
   document.getElementById('spec-band-label').textContent = `SPHEREx Band: spherex-${bandKey}`;
   document.getElementById('spec-band-wl').textContent    = bd.wl;
-  document.getElementById('spec-heading').textContent    = bd.heading;
-  document.getElementById('spec-desc').textContent       = bd.desc;
+  document.getElementById('spec-heading').textContent    = bd.heading[currentLang] || bd.heading.en;
+  document.getElementById('spec-desc').textContent       = bd.desc[currentLang] || bd.desc.en;
   document.getElementById('spec-flux').textContent       = bd.flux;
   document.getElementById('spec-snr').textContent        = bd.snr;
   document.getElementById('active-channel-label').textContent = `Active: ${bd.label}`;
@@ -244,17 +326,18 @@ function setStatus(state, msg) {
 function showEmpty(type, msg) {
   emptyDiv.style.display = 'flex';
   emptyDiv.className = '';
+  const t = TRANSLATIONS[currentLang];
   if (type === 'loading') {
-    emptyDiv.innerHTML = `<div class="empty-icon" style="opacity:.35">⏳</div><div class="empty-title">Consultando IRSA…</div>`;
+    emptyDiv.innerHTML = `<div class="empty-icon" style="opacity:.35">⏳</div><div class="empty-title">${currentLang === 'pt' ? 'Consultando IRSA…' : 'Consulting IRSA…'}</div>`;
     return;
   }
   if (type === 'irsa-down') {
     emptyDiv.classList.add('irsa-down');
-    emptyDiv.innerHTML = `<div class="empty-icon">⚠️</div><div class="empty-title">Serviços IRSA indisponíveis</div>
-      <div class="fallback-note"><strong>WiseView operacional.</strong><br><br>Visualização à esquerda ativa.<br><span style="font-size:10px;opacity:.7;">↳ ${msg||''}</span></div>`;
+    emptyDiv.innerHTML = `<div class="empty-icon">⚠️</div><div class="empty-title">${currentLang === 'pt' ? 'Serviços IRSA indisponíveis' : 'IRSA services unavailable'}</div>
+      <div class="fallback-note"><strong>${currentLang === 'pt' ? 'WiseView operacional.' : 'WiseView operational.'}</strong><br><br>${currentLang === 'pt' ? 'Visualização à esquerda ativa.' : 'Left view active.'}<br><span style="font-size:10px;opacity:.7;">↳ ${msg||''}</span></div>`;
     return;
   }
-  emptyDiv.innerHTML = `<div class="empty-icon">❌</div><div class="empty-title" style="color:var(--danger)">Erro na pesquisa</div><div class="fallback-note">${msg||''}</div>`;
+  emptyDiv.innerHTML = `<div class="empty-icon">❌</div><div class="empty-title" style="color:var(--danger)">${currentLang === 'pt' ? 'Erro na pesquisa' : 'Search error'}</div><div class="fallback-note">${msg||''}</div>`;
 }
 
 function hideEmpty() { emptyDiv.style.display = 'none'; }
@@ -264,10 +347,11 @@ async function searchSPHEREx() {
   const dec    = document.getElementById('decInput').value;
   const band   = document.getElementById('bandInput').value;
   const radius = document.getElementById('radiusInput').value;
+  const t      = TRANSLATIONS[currentLang];
 
-  if (!ra || !dec) { setStatus('err','RA e Dec são obrigatórios'); return; }
+  if (!ra || !dec) { setStatus('err', t.status_missing_coords); return; }
 
-  setStatus('busy','Consultando IRSA…');
+  setStatus('busy', t.status_consulting);
   searchBtn.classList.add('loading');
   searchBtn.textContent = '⟳';
   metaBtn.disabled = true;
@@ -311,11 +395,11 @@ async function searchSPHEREx() {
     const msg = err.message || 'Erro desconhecido';
     const down = /irsa|caltech|timeout|network|unavailable|503|502|504/i.test(msg);
     showEmpty(down ? 'irsa-down' : 'error', msg);
-    setStatus('err', down ? 'IRSA indisponível' : msg);
+    setStatus('err', down ? t.status_irsa_down : msg);
     loadFirefly();
   } finally {
     searchBtn.classList.remove('loading');
-    searchBtn.innerHTML = '<i data-lucide="telescope" style="width:13px;height:13px"></i> Pesquisar';
+    searchBtn.innerHTML = `<i data-lucide="telescope" style="width:13px;height:13px"></i> <span>${t.nav_search}</span>`;
     if (window.lucide) lucide.createIcons();
   }
 }
@@ -330,8 +414,9 @@ function openMeta() {
   };
 
   const allParams = { ...topInfo, ...d };
+  const t = TRANSLATIONS[currentLang];
 
-  let html = `<div class="meta-section-title">Parâmetros Completos da Observação (IRSA / SPHEREx)</div>`;
+  let html = `<div class="meta-section-title">${currentLang === 'pt' ? 'Parâmetros Completos da Observação (IRSA / SPHEREx)' : 'Complete Observation Parameters (IRSA / SPHEREx)'}</div>`;
   html += `<div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 6px;">`;
 
   for (const [key, val] of Object.entries(allParams)) {
@@ -364,11 +449,11 @@ function openMeta() {
     html += `
       <div class="fits-url-box" id="fitsUrlBox" style="display:flex; margin-top:12px;">
         <span class="fits-url-text" id="fitsUrlText">${fitsUrl}</span>
-        <button class="copy-btn" id="copyFitsBtn">copiar</button>
+        <button class="copy-btn" id="copyFitsBtn">${t.btn_copy}</button>
       </div>
       <button class="tb-btn primary" id="sendToFireflyBtn" style="width:100%; margin-top:10px; justify-content:center;">
         <i data-lucide="play" style="width:13px;height:13px"></i>
-        <span>Carregar FITS diretamente no Firefly</span>
+        <span>${currentLang === 'pt' ? 'Carregar FITS diretamente no Firefly' : 'Load FITS directly into Firefly'}</span>
       </button>
     `;
   }
@@ -381,7 +466,7 @@ function openMeta() {
     sendBtn.addEventListener('click', () => {
       loadFirefly(fitsUrl);
       closeMeta();
-      setStatus('ok', 'FITS carregado no Firefly com sucesso!');
+      setStatus('ok', currentLang === 'pt' ? 'FITS carregado no Firefly com sucesso!' : 'FITS successfully loaded into Firefly!');
     });
   }
 
@@ -389,8 +474,8 @@ function openMeta() {
   if (copyBtnEl && fitsUrl) {
     copyBtnEl.addEventListener('click', () => {
       navigator.clipboard.writeText(fitsUrl).then(() => {
-        copyBtnEl.textContent = '✓ copiado';
-        setTimeout(() => { copyBtnEl.textContent = 'copiar'; }, 1500);
+        copyBtnEl.textContent = currentLang === 'pt' ? '✓ copiado' : '✓ copied';
+        setTimeout(() => { copyBtnEl.textContent = t.btn_copy; }, 1500);
       });
     });
   }
@@ -400,17 +485,43 @@ function openMeta() {
 
 function closeMeta() { metaOverlay.classList.remove('visible'); }
 
+/* Função para Alternar Idioma Dinamicamente */
+function toggleLanguage() {
+  currentLang = currentLang === 'pt' ? 'en' : 'pt';
+  langLabel.textContent = currentLang === 'pt' ? 'EN' : 'PT';
+
+  // Atualiza textos estáticos marcados com data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (TRANSLATIONS[currentLang][key]) {
+      el.textContent = TRANSLATIONS[currentLang][key];
+    }
+  });
+
+  // Atualiza o botão de configuração se estiver aberto/fechado
+  if (configBtn.querySelector('span')) {
+    configBtn.querySelector('span').textContent = configOpen ? (currentLang === 'pt' ? 'Fechar config.' : 'Close Config') : (currentLang === 'pt' ? 'Config. WiseView' : 'WiseView Config');
+  }
+
+  // Atualiza componentes dinâmicos da página
+  updateTargetCard(currentPreset);
+  setBand(activeBand);
+  initPresets();
+}
+
 searchBtn.addEventListener('click', () => { loadWiseView(); searchSPHEREx(); });
 
 configBtn.addEventListener('click', () => {
   configOpen = !configOpen;
-  configBtn.querySelector('span') && (configBtn.querySelector('span').textContent = configOpen ? 'Fechar config.' : 'Config. WiseView');
+  const t = TRANSLATIONS[currentLang];
+  configBtn.querySelector('span') && (configBtn.querySelector('span').textContent = configOpen ? (currentLang === 'pt' ? 'Fechar config.' : 'Close Config') : (currentLang === 'pt' ? 'Config. WiseView' : 'WiseView Config'));
   applyWVLayout(configOpen);
 });
 
 metaBtn.addEventListener('click', openMeta);
 metaClose.addEventListener('click', closeMeta);
 metaOverlay.addEventListener('click', e => { if(e.target===metaOverlay) closeMeta(); });
+langToggleBtn.addEventListener('click', toggleLanguage);
 
 document.getElementById('bandInput')?.addEventListener('change', e => setBand(e.target.value));
 
