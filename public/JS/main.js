@@ -1,6 +1,6 @@
 'use strict';
 
-const NAV_LEFT_PX = 400;
+const NAV_LEFT_PX = 262;
 const FOV         = 720;
 const ZOOM        = (1.5 * (720 / FOV)).toFixed(2);
 const API_BASE    = 'https://hardtofindapi.vercel.app/api/search-spherex';
@@ -168,7 +168,7 @@ function loadFirefly(fitsUrl) {
 
 function applyWVLayout(showNav) {
   const h      = wvCol.offsetHeight;
-  const offset = showNav ? 0 : NAV_LEFT_PX;
+  const offset = showNav ? 0 : Math.min(NAV_LEFT_PX, wvCol.offsetWidth * 0.4);
   frame.style.transition = 'margin-left 0.3s cubic-bezier(0.16,1,0.3,1)';
   frame.style.marginLeft = `-${offset}px`;
   frame.style.height     = `${h}px`;
