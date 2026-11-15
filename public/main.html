@@ -1,1 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HardToFind — Observation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script type="text/javascript" src="https://irsa.ipac.caltech.edu/irsaviewer/firefly_loader.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
 
+  <!-- Background glows -->
+  <div class="bg-glow-layer" aria-hidden="true">
+    <div class="glow-blob glow-blob-1"></div>
+    <div class="glow-blob glow-blob-2"></div>
+    <div class="glow-blob glow-blob-3"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TOP MENU BAR
+  ══════════════════════════════════════ -->
+  <div id="topbar">
+    <a href="index.html" class="brand">
+      <div class="brand-logo"><i data-lucide="orbit"></i></div>
+      <span class="brand-name">Hard<em>ToFind</em></span>
+    </a>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <span class="tb-label">RA</span>
+      <input type="number" class="tb-input coord" id="raInput" placeholder="graus" step="0.001" value="269.452">
+    </div>
+
+    <div class="tb-group">
+      <span class="tb-label">Dec</span>
+      <input type="number" class="tb-input coord" id="decInput" placeholder="graus" step="0.001" value="4.693">
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <span class="tb-label">Banda</span>
+      <select class="tb-input small" id="bandInput">
+        <option value="d1">d1</option>
+        <option value="d2">d2</option>
+        <option value="d3">d3</option>
+        <option value="d4">d4</option>
+        <option value="d5" selected>d5</option>
+        <option value="d6">d6</option>
+      </select>
+    </div>
+
+    <div class="tb-group">
+      <span class="tb-label">Raio (″)</span>
+      <input type="number" class="tb-input small" id="radiusInput" value="60" min="1" max="3600">
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <span class="tb-label">Blink (ms)</span>
+      <input type="number" class="tb-input small" id="speedInput" value="400" min="50" max="2000" step="50">
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <button class="tb-btn primary" id="searchBtn">
+      <i data-lucide="telescope" style="width:13px;height:13px"></i>
+      <span>Pesquisar</span>
+    </button>
+
+    <button class="tb-btn secondary" id="configBtn">
+      <i data-lucide="settings-2" style="width:13px;height:13px"></i>
+      <span>Config. WiseView</span>
+    </button>
+
+    <div class="tb-sep"></div>
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">pronto</span>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ÁREA PRINCIPAL (3 Colunas)
+  ══════════════════════════════════════ -->
+  <div id="main">
+
+    <!-- ── Coluna 1: WiseView ── -->
+    <div id="wv-col">
+      <div id="wv-clip">
+        <iframe id="wvFrame" scrolling="no" title="WiseView WISE Animation"></iframe>
+      </div>
+    </div>
+
+    <!-- ── Coluna 2: Presets & Alvos ── -->
+    <div id="preset-col">
+      <div id="preset-header">
+        <span class="col-title">Presets · <em>Alvos Astronómicos</em></span>
+      </div>
+      <div id="preset-body">
+        
+        <!-- 1. Seletor Rápido (Combobox) -->
+        <div class="preset-group">
+          <label class="tb-label" for="presetSelect">Selecionar Alvo</label>
+          <select class="tb-input" id="presetSelect" style="width:100%;">
+            <option value="" disabled selected>-- Escolher alvo pré-definido --</option>
+          </select>
+        </div>
+
+        <!-- 2. Card de Imagem (Entre a combobox e o card de info, com fundo preto) -->
+        <div class="target-image-card">
+          <img id="targetImg" src="" alt="Target Image" onerror="this.style.display='none'">
+          <span class="image-placeholder-text">Fundo Preto / Pré-visualização</span>
+        </div>
+
+        <!-- 3. Painel de Detalhes do Alvo Selecionado -->
+        <div id="target-card">
+          <div class="target-title" id="targetName">Barnard's Star</div>
+          <div class="target-coords-sub" id="targetCoords">RA: 269.45208° | Dec: +4.69333°</div>
+          <p class="target-desc" id="targetDesc">
+            Red Dwarf with extreme proper motion across the sky.
+          </p>
+
+          <div class="target-meta-grid">
+            <div class="target-meta-item">
+              <div class="tkey">Tipo</div>
+              <div class="tval" id="targetType">Red Dwarf</div>
+            </div>
+            <div class="target-meta-item">
+              <div class="tkey">FOV Recomendado</div>
+              <div class="tval" id="targetFov">0.15°</div>
+            </div>
+            <div class="target-meta-item">
+              <div class="tkey">Banda Ideal</div>
+              <div class="tval" id="targetBand">D5</div>
+            </div>
+            <div class="target-meta-item">
+              <div class="tkey">Fluxo Térmico</div>
+              <div class="tval" id="targetFlux">142.5 mJy</div>
+            </div>
+          </div>
+
+          <button class="tb-btn primary" id="applyPresetBtn" style="width:100%; justify-content:center; margin-top:12px; padding: 8px;">
+            <i data-lucide="crosshair" style="width:14px;height:14px"></i>
+            <span>Carregar no Observatório</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Coluna 3: SPHEREx & Espectroscópio ── -->
+    <div id="spherex-col">
+      <div id="spherex-header">
+        <span class="col-title">SPHEREx · <em>IRSA Firefly</em></span>
+        <div class="header-actions">
+          <button class="tb-btn secondary" id="metaBtn" style="font-size:11px;padding:4px 10px;" disabled>
+            <i data-lucide="file-text" style="width:12px;height:12px"></i>
+            Metadados
+          </button>
+        </div>
+      </div>
+
+      <!-- Firefly (55% da altura) -->
+      <div id="fireflyArea">
+        <div id="fireflyDisplay"></div>
+        <div id="spherex-empty">
+          <div class="empty-icon">🌌</div>
+          <div class="empty-title">Aguardando pesquisa</div>
+          <div style="font-size:12px;color:var(--text-muted);">
+            Selecione um preset ou insira coordenadas e clique em Pesquisar
+          </div>
+        </div>
+      </div>
+
+      <!-- Espectroscópio interativo -->
+      <div id="spectrometer">
+        <div id="spec-header">
+          <span class="spec-title">Espectroscópio · <em>Banda activa</em></span>
+          <span class="spec-live">● LIVE SYNC</span>
+        </div>
+
+        <div id="band-tabs">
+          <button class="band-tab" data-band="d1" onclick="setBand('d1')">D1 · 0.75µm</button>
+          <button class="band-tab" data-band="d2" onclick="setBand('d2')">D2 · 1.10µm</button>
+          <button class="band-tab" data-band="d3" onclick="setBand('d3')">D3 · 1.70µm</button>
+          <button class="band-tab" data-band="d4" onclick="setBand('d4')">D4 · 2.60µm</button>
+          <button class="band-tab active" data-band="d5" onclick="setBand('d5')">D5 · 3.80µm</button>
+          <button class="band-tab" data-band="d6" onclick="setBand('d6')">D6 · 5.00µm</button>
+        </div>
+
+        <div id="spec-body">
+          <div id="spec-info">
+            <div>
+              <span id="spec-band-label" class="spec-band-label">SPHEREx Band: spherex-d5</span>
+              <span id="spec-band-wl" class="spec-band-wl">3.40 – 4.50 µm</span>
+            </div>
+            <div id="spec-heading" class="spec-heading">Planet X Thermal Signature</div>
+            <div id="spec-desc" class="spec-desc">
+              Key frequency where cold gas giants exhibit blackbody emission peak at 35–40 K.
+            </div>
+            <div class="spec-telemetry">
+              <div class="spec-tele-card">
+                <div class="tkey">Thermal Flux</div>
+                <div class="tval" id="spec-flux">215.8 mJy</div>
+              </div>
+              <div class="spec-tele-card">
+                <div class="tkey">SNR</div>
+                <div class="tval cyan" id="spec-snr">45.2 σ</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="spec-chart">
+            <div class="spec-chart-top">
+              <span class="spec-chart-label">SPECTRAL_CURVE_108CH</span>
+              <span class="spec-live">● LIVE</span>
+            </div>
+            <div id="spectrum-bars"></div>
+            <div class="spec-chart-bottom">
+              <span class="spec-ch-label">Ch.001 · 0.75µm</span>
+              <span id="active-channel-label">Active: D5</span>
+              <span class="spec-ch-label">Ch.108 · 5.0µm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overlay Metadados -->
+      <div id="meta-overlay">
+        <div id="meta-panel">
+          <button class="meta-close" id="metaClose" aria-label="Fechar">&#215;</button>
+          <h2>Metadados da observação</h2>
+          <div id="metaGrid"></div>
+          <div class="fits-url-box" id="fitsUrlBox" style="display:none">
+            <span class="fits-url-text" id="fitsUrlText"></span>
+            <button class="copy-btn" id="copyFitsBtn">copiar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>lucide.createIcons();</script>
+  <script src="main.js"></script>
+</body>
+</html>
