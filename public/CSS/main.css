@@ -480,17 +480,13 @@ html, body {
   }
 
   /* Coluna SPHEREx no mobile: largura total e altura automática */
-  
-#spherex-col {
-  width: 40%; 
-  min-width: 320px;
-  flex-shrink: 0; /* <--- ADICIONE ESTA LINHA */
-  display: flex; 
-  flex-direction: column;
-  overflow: hidden; 
-  position: relative;
-  background: var(--space-black);
-}
+  #spherex-col {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    min-height: 520px;
+    overflow: visible;
+  }
 
   /* Firefly: altura fixa razoável no mobile */
   #fireflyArea {
