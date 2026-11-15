@@ -32,46 +32,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        .glass-panel {
-            background: rgba(6, 20, 16, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(16, 185, 129, 0.15);
-        }
-        .glass-panel:hover {
-            border-color: rgba(16, 185, 129, 0.35);
-            box-shadow: 0 0 35px rgba(16, 185, 129, 0.12);
-        }
-        .text-gradient {
-            background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #f59e0b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        #three-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 0;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #020609;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #064e3b;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #10b981;
-        }
-    </style>
+    
+    <style> src="CSS/style.css"</style>
+    
 </head>
 <body class="bg-spaceBlack text-slate-100 font-sans antialiased overflow-x-hidden selection:bg-emerald-500 selection:text-slate-950">
 
@@ -91,16 +54,6 @@
                     <span class="block text-[10px] tracking-widest text-emerald-500 uppercase font-mono">SPHEREx / Planet X</span>
                 </div>
             </a>
-
-            <!-- Desktop Navigation -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-                <a href="#missao" class="hover:text-emerald-400 transition-colors">A Missão</a>
-                <a href="#bandas" class="hover:text-emerald-400 transition-colors">108 Bandas</a>
-                <a href="#planetax" class="hover:text-emerald-400 transition-colors">Caça ao Planeta X</a>
-                <a href="https://gemini.google.com/notebook/97580cb5-5768-42ab-a7cb-6eb61bdca277" target="_blank" class="hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                    <i data-lucide="book-open" class="w-4 h-4"></i> projectX
-                </a>
-            </nav>
 
             <!-- Action CTA -->
             <div class="hidden md:flex items-center gap-4">
@@ -140,12 +93,12 @@
 
                 <!-- Headline -->
                 <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-5xl mx-auto leading-[1.15] mb-8">
-                    Revelando o invisível em <span class="text-gradient">108 cores infravermelhas</span> para encontrar o Planeta X.
+                    Revelando o invisível em <span class="text-gradient">108 cores infravermelhas</span> para ajudar a encontrar o Planeta X.
                 </h1>
 
                 <!-- Subheadline -->
                 <p class="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-light leading-relaxed mb-12">
-                    O projeto <strong>hardtofind</strong> combina o poder astrométrico da missão espacial SPHEREx e arquivos FITS do IRSA com análise espectral avançada para mapear assinaturas térmicas nas fronteiras do Sistema Solar.
+                    O projeto <strong>HardToFind</strong> combina o poder astrométrico da missão espacial SPHEREx  com análise espectral para mapear assinaturas térmicas nas fronteiras do Sistema Solar.
                 </p>
 
                 <!-- Action Buttons -->
