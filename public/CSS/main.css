@@ -430,12 +430,7 @@ html, body {
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
-  /* Cancelar o margin-left negativo que o JS aplica para esconder o menu do WiseView —
-     no mobile o clip já trata do overflow, não precisamos de deslocar o iframe */
-  #wvFrame {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
+
 
   /* Coluna de presets: largura total, sem scroll interno forçado */
   #preset-col {
