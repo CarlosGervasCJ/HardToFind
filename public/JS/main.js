@@ -188,7 +188,7 @@ function buildWVHash() {
 function loadWiseView() {
   applyWVLayout(false);
   frame.src = '';
-  setTimeout(() => { frame.src = `https://byw.tools/wiseview#${buildWVHash()}`; }, 80);
+  setTimeout(() => { frame.src = `https://shy-sun-1a2f.carlosgervasio745.workers.dev/#${buildWVHash()}`; }, 80);
 }
 
 function initBars() {
