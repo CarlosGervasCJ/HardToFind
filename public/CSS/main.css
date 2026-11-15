@@ -139,12 +139,19 @@ html, body {
 /* ===================================================================
  * [DESKTOP] Ajuste da Sidebar do WiseView no Desktop
  * =================================================================== */
+/* ===================================================================
+ * [DESKTOP] Ajuste da Sidebar do WiseView no Desktop
+ * =================================================================== */
 #wvFrame { 
   border: none; 
   display: block; 
-  /* Altere o valor de -150px para esconder mais ou menos a barra lateral no desktop */
-  transform: translateX(-200px); 
-  width: calc(1890px + 200px) !important; /* Deve somar o mesmo valor absoluto do translateX acima */
+  position: relative;
+  
+  /* Altere o valor abaixo (-150px) para esconder mais ou menos a barra lateral */
+  transform: translateX(-1500px); 
+  
+  /* Usa 100% da largura da coluna + o exato valor deslocado para compensar */
+  width: calc(100% + 150px) !important; 
 }
 
 /* Coluna 2: Presets & Alvos */
