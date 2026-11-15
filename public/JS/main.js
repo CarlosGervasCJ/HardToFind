@@ -11,12 +11,12 @@ const BAND_COLORS = {
 };
 
 const BAND_DATA = {
-  d1:{ label:'D1', wl:'0.75 – 1.10 µm', heading:'Near-Infrared Optical Boundary', desc:'Ideal for detecting low-mass stars, brown dwarfs, and young stellar objects.', flux:'142.5 mJy', snr:'31.8 σ', color:'#10b981', range:[0,18] },
-  d2:{ label:'D2', wl:'1.10 – 1.60 µm', heading:'H-Band Infrared Window', desc:'Deep analysis of distant galaxies and trans-Neptunian objects with methane reflectance.', flux:'188.2 mJy', snr:'38.4 σ', color:'#06b6d4', range:[18,36] },
-  d3:{ label:'D3', wl:'1.60 – 2.40 µm', heading:'K-Band Thermal Mapping', desc:'Sensitive to thermal emissions and molecular signatures of water vapor at solar system boundaries.', flux:'96.4 mJy',  snr:'27.1 σ', color:'#f59e0b', range:[36,54] },
-  d4:{ label:'D4', wl:'2.40 – 3.40 µm', heading:'Mid-IR Hydrocarbon Band', desc:'Crucial range for volatile organic compounds and parallax tracking of distant gas planets.', flux:'64.1 mJy',  snr:'22.5 σ', color:'#f78166', range:[54,72] },
-  d5:{ label:'D5', wl:'3.40 – 4.50 µm', heading:'Planet X Thermal Signature', desc:'Key frequency where cold gas giants exhibit blackbody emission peak at 35–40 K.', flux:'215.8 mJy', snr:'45.2 σ', color:'#bc8cff', range:[72,90] },
-  d6:{ label:'D6', wl:'4.50 – 5.00 µm', heading:'Deep Thermal Infrared Limit', desc:'Upper SPHEREx limit — cosmic background scanning and highly reddened source detection.', flux:'118.9 mJy', snr:'29.6 σ', color:'#38bdf8', range:[90,108] },
+  d1:{ label:'D1', wl:'0.75 – 1.10 µm', heading:'Near-Infrared Optical Boundary', desc:'Ideal for detecting low-mass stars, brown dwarfs, and young stellar objects.', flux:'142.5 mJy', snr:'31.8 σ', color:'#10b981', range:[0,17] },
+  d2:{ label:'D2', wl:'1.10 – 1.60 µm', heading:'H-Band Infrared Window', desc:'Deep analysis of distant galaxies and trans-Neptunian objects with methane reflectance.', flux:'188.2 mJy', snr:'38.4 σ', color:'#06b6d4', range:[17,34] },
+  d3:{ label:'D3', wl:'1.60 – 2.40 µm', heading:'K-Band Thermal Mapping', desc:'Sensitive to thermal emissions and molecular signatures of water vapor at solar system boundaries.', flux:'96.4 mJy',  snr:'27.1 σ', color:'#f59e0b', range:[34,51] },
+  d4:{ label:'D4', wl:'2.40 – 3.40 µm', heading:'Mid-IR Hydrocarbon Band', desc:'Crucial range for volatile organic compounds and parallax tracking of distant gas planets.', flux:'64.1 mJy',  snr:'22.5 σ', color:'#f78166', range:[51,68] },
+  d5:{ label:'D5', wl:'3.40 – 4.50 µm', heading:'Planet X Thermal Signature', desc:'Key frequency where cold gas giants exhibit blackbody emission peak at 35–40 K.', flux:'215.8 mJy', snr:'45.2 σ', color:'#bc8cff', range:[68,85] },
+  d6:{ label:'D6', wl:'4.50 – 5.00 µm', heading:'Deep Thermal Infrared Limit', desc:'Upper SPHEREx limit — cosmic background scanning and highly reddened source detection.', flux:'118.9 mJy', snr:'29.6 σ', color:'#38bdf8', range:[85,102] },
 };
 
 /* Os 5 Presets Exatos com respetivas imagens */
@@ -192,7 +192,7 @@ function loadWiseView() {
 }
 
 function initBars() {
-  barHeights = Array.from({length:108}, () => 15 + Math.random() * 85);
+  barHeights = Array.from({length: 102}, () => 15 + Math.random() * 85);
   specBars.innerHTML = '';
   barHeights.forEach((h, i) => {
     const bar = document.createElement('div');
@@ -285,8 +285,6 @@ async function searchSPHEREx() {
 
     const record = data.data || data;
     const fitsUrl = record.fits_url || record.access_url;
-
-    // Atualização do WiseView desativada aqui para preservar o grau de assertividade e posição manual do WiseView.
 
     if (fitsUrl) {
       hideEmpty();
