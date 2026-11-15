@@ -2,138 +2,107 @@
 <html lang="pt-BR" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HardToFind — Observation</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script type="text/javascript" src="https://irsa.ipac.caltech.edu/irsaviewer/firefly_loader.js"></script>
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="CSS/main.css">
 </head>
 <body>
 
-  <!-- Topbar Principal -->
+  <!-- Background glows -->
+  <div class="bg-glow-layer" aria-hidden="true">
+    <div class="glow-blob glow-blob-1"></div>
+    <div class="glow-blob glow-blob-2"></div>
+    <div class="glow-blob glow-blob-3"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TOP MENU BAR
+  ══════════════════════════════════════ -->
   <div id="topbar">
     <a href="index.html" class="brand">
       <div class="brand-logo"><i data-lucide="orbit"></i></div>
       <span class="brand-name">Hard<em>ToFind</em></span>
     </a>
 
-    <!-- Conteúdo para Desktop -->
-    <div class="tb-desktop-content">
-      <div class="tb-sep"></div>
+    <div class="tb-sep"></div>
 
-      <div class="tb-group">
-        <span class="tb-label">RA</span>
-        <input type="number" class="tb-input coord" id="raInput" placeholder="graus" step="0.001" value="269.452">
-      </div>
-
-      <div class="tb-group">
-        <span class="tb-label">Dec</span>
-        <input type="number" class="tb-input coord" id="decInput" placeholder="graus" step="0.001" value="4.693">
-      </div>
-
-      <div class="tb-sep"></div>
-
-      <div class="tb-group">
-        <span class="tb-label">Banda</span>
-        <select class="tb-input small" id="bandInput">
-          <option value="d1">d1</option>
-          <option value="d2">d2</option>
-          <option value="d3">d3</option>
-          <option value="d4">d4</option>
-          <option value="d5" selected>d5</option>
-          <option value="d6">d6</option>
-        </select>
-      </div>
-
-      <div class="tb-group">
-        <span class="tb-label">Raio (″)</span>
-        <input type="number" class="tb-input small" id="radiusInput" value="60" min="1" max="3600">
-      </div>
-
-      <div class="tb-sep"></div>
-
-      <div class="tb-group">
-        <span class="tb-label">Blink (ms)</span>
-        <input type="number" class="tb-input small" id="speedInput" value="400" min="50" max="2000" step="50">
-      </div>
-
-      <div class="tb-sep"></div>
-
-      <button class="tb-btn primary" id="searchBtn">
-        <i data-lucide="telescope" style="width:13px;height:13px"></i>
-        <span>Pesquisar</span>
-      </button>
-
-      <button class="tb-btn secondary" id="configBtn">
-        <i data-lucide="settings-2" style="width:13px;height:13px"></i>
-        <span>Config. WiseView</span>
-      </button>
-
-      <div class="tb-sep"></div>
-      <div class="status-dot" id="statusDot"></div>
-      <span id="statusText">pronto</span>
+    <div class="tb-group">
+      <span class="tb-label">RA</span>
+      <input type="number" class="tb-input coord" id="raInput" placeholder="graus" step="0.001" value="269.452">
     </div>
 
-    <!-- Botão de Acesso Mobile -->
-    <button id="mobile-menu-toggle" aria-label="Abrir Menu de Parâmetros">
-      <i data-lucide="sliders-horizontal" style="width:18px;height:18px"></i>
+    <div class="tb-group">
+      <span class="tb-label">Dec</span>
+      <input type="number" class="tb-input coord" id="decInput" placeholder="graus" step="0.001" value="4.693">
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <span class="tb-label">Banda</span>
+      <select class="tb-input small" id="bandInput">
+        <option value="d1">d1</option>
+        <option value="d2">d2</option>
+        <option value="d3">d3</option>
+        <option value="d4">d4</option>
+        <option value="d5" selected>d5</option>
+        <option value="d6">d6</option>
+      </select>
+    </div>
+
+    <div class="tb-group">
+      <span class="tb-label">Raio (″)</span>
+      <input type="number" class="tb-input small" id="radiusInput" value="60" min="1" max="3600">
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <span class="tb-label">Blink (ms)</span>
+      <input type="number" class="tb-input small" id="speedInput" value="400" min="50" max="2000" step="50">
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <button class="tb-btn primary" id="searchBtn">
+      <i data-lucide="telescope" style="width:13px;height:13px"></i>
+      <span>Pesquisar</span>
     </button>
+
+    <button class="tb-btn secondary" id="configBtn">
+      <i data-lucide="settings-2" style="width:13px;height:13px"></i>
+      <span>Config. WiseView</span>
+    </button>
+
+    <div class="tb-sep"></div>
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">pronto</span>
   </div>
 
-  <!-- Mobile Drawer Lateral -->
-  <div class="mobile-drawer-overlay" id="mobileDrawerOverlay"></div>
-  <aside class="mobile-drawer" id="mobileDrawer">
-    <div class="mobile-drawer-header">
-      <span class="col-title">Parâmetros de <em>Busca</em></span>
-      <button class="tb-btn secondary" id="closeMobileDrawer" style="padding: 4px 8px;">
-        <i data-lucide="x" style="width:16px;height:16px"></i>
-      </button>
-    </div>
-    <div class="mobile-drawer-body">
-      <div class="preset-group">
-        <label class="tb-label">RA (graus)</label>
-        <input type="number" class="tb-input" id="raInputMobile" step="0.001" value="269.452">
-      </div>
-      <div class="preset-group">
-        <label class="tb-label">Dec (graus)</label>
-        <input type="number" class="tb-input" id="decInputMobile" step="0.001" value="4.693">
-      </div>
-      <div class="preset-group">
-        <label class="tb-label">Banda Espectral</label>
-        <select class="tb-input" id="bandInputMobile">
-          <option value="d1">d1 (0.75 – 1.10 µm)</option>
-          <option value="d2">d2 (1.10 – 1.60 µm)</option>
-          <option value="d3">d3 (1.60 – 2.40 µm)</option>
-          <option value="d4">d4 (2.40 – 3.40 µm)</option>
-          <option value="d5" selected>d5 (3.40 – 4.50 µm)</option>
-          <option value="d6">d6 (4.50 – 5.00 µm)</option>
-        </select>
-      </div>
-      <div class="preset-group">
-        <label class="tb-label">Raio de Busca (″)</label>
-        <input type="number" class="tb-input" id="radiusInputMobile" value="60">
-      </div>
-      <div class="preset-group">
-        <label class="tb-label">Blink Speed (ms)</label>
-        <input type="number" class="tb-input" id="speedInputMobile" value="400">
-      </div>
-      <button class="tb-btn primary" id="searchBtnMobile" style="width:100%; margin-top:8px; padding:10px;">
-        <i data-lucide="telescope" style="width:15px;height:15px"></i>
-        <span>Executar Pesquisa</span>
-      </button>
-    </div>
-  </aside>
-
-  <!-- Área Principal -->
+  <!-- ══════════════════════════════════════
+       ÁREA PRINCIPAL (3 Colunas)
+  ══════════════════════════════════════ -->
   <div id="main">
 
-    <!-- Presets (Coluna 2 -> Passa a ser o item inicial no Mobile) -->
+    <!-- ── Coluna 1: WiseView ── -->
+    <div id="wv-col">
+      <div id="wv-clip">
+        <iframe id="wvFrame" scrolling="no" title="WiseView WISE Animation"></iframe>
+      </div>
+    </div>
+
+    <!-- ── Coluna 2: Presets & Alvos ── -->
     <div id="preset-col">
       <div id="preset-header">
         <span class="col-title">Presets · <em>Alvos Astronómicos</em></span>
       </div>
       <div id="preset-body">
+        
+        <!-- 1. Seletor Rápido (Combobox) -->
         <div class="preset-group">
           <label class="tb-label" for="presetSelect">Selecionar Alvo</label>
           <select class="tb-input" id="presetSelect" style="width:100%;">
@@ -141,15 +110,19 @@
           </select>
         </div>
 
+        <!-- 2. Card de Imagem (Entre a combobox e o card de info, com fundo preto) -->
         <div class="target-image-card">
           <img id="targetImg" src="" alt="Target Image" onerror="this.style.display='none'">
           <span class="image-placeholder-text">Fundo Preto / Pré-visualização</span>
         </div>
 
+        <!-- 3. Painel de Detalhes do Alvo Selecionado -->
         <div id="target-card">
           <div class="target-title" id="targetName">Barnard's Star</div>
           <div class="target-coords-sub" id="targetCoords">RA: 269.45208° | Dec: +4.69333°</div>
-          <p class="target-desc" id="targetDesc">Red Dwarf with extreme proper motion across the sky.</p>
+          <p class="target-desc" id="targetDesc">
+            Red Dwarf with extreme proper motion across the sky.
+          </p>
 
           <div class="target-meta-grid">
             <div class="target-meta-item">
@@ -170,42 +143,40 @@
             </div>
           </div>
 
-          <button class="tb-btn primary" id="applyPresetBtn" style="width:100%; justify-content:center; margin-top:12px; padding: 10px;">
+          <button class="tb-btn primary" id="applyPresetBtn" style="width:100%; justify-content:center; margin-top:12px; padding: 8px;">
             <i data-lucide="crosshair" style="width:14px;height:14px"></i>
             <span>Carregar no Observatório</span>
           </button>
         </div>
+
       </div>
     </div>
 
-    <!-- WiseView (Coluna 1 -> Posicionado no meio) -->
-    <div id="wv-col">
-      <div id="wv-clip">
-        <iframe id="wvFrame" scrolling="no" title="WiseView WISE Animation"></iframe>
-      </div>
-    </div>
-
-    <!-- SPHEREx & Espectroscópio (Coluna 3) -->
+    <!-- ── Coluna 3: SPHEREx & Espectroscópio ── -->
     <div id="spherex-col">
       <div id="spherex-header">
         <span class="col-title">SPHEREx · <em>IRSA Firefly</em></span>
-        <button class="tb-btn secondary" id="metaBtn" style="font-size:11px;padding:4px 10px;" disabled>
-          <i data-lucide="file-text" style="width:12px;height:12px"></i>
-          Metadados
-        </button>
+        <div class="header-actions">
+          <button class="tb-btn secondary" id="metaBtn" style="font-size:11px;padding:4px 10px;" disabled>
+            <i data-lucide="file-text" style="width:12px;height:12px"></i>
+            Metadados
+          </button>
+        </div>
       </div>
 
+      <!-- Firefly (55% da altura) -->
       <div id="fireflyArea">
         <div id="fireflyDisplay"></div>
         <div id="spherex-empty">
           <div class="empty-icon">🌌</div>
           <div class="empty-title">Aguardando pesquisa</div>
           <div style="font-size:12px;color:var(--text-muted);">
-            Selecione um preset ou insira coordenadas
+            Selecione um preset ou insira coordenadas e clique em Pesquisar
           </div>
         </div>
       </div>
 
+      <!-- Espectroscópio interativo -->
       <div id="spectrometer">
         <div id="spec-header">
           <span class="spec-title">Espectroscópio · <em>Banda activa</em></span>
@@ -249,9 +220,9 @@
             </div>
             <div id="spectrum-bars"></div>
             <div class="spec-chart-bottom">
-              <span class="spec-ch-label">Ch.001</span>
+              <span class="spec-ch-label">Ch.001 · 0.75µm</span>
               <span id="active-channel-label">Active: D5</span>
-              <span class="spec-ch-label">Ch.102</span>
+              <span class="spec-ch-label">Ch.102 · 5.0µm</span>
             </div>
           </div>
         </div>
@@ -263,6 +234,10 @@
           <button class="meta-close" id="metaClose" aria-label="Fechar">&#215;</button>
           <h2>Metadados da observação</h2>
           <div id="metaGrid"></div>
+          <div class="fits-url-box" id="fitsUrlBox" style="display:none">
+            <span class="fits-url-text" id="fitsUrlText"></span>
+            <button class="copy-btn" id="copyFitsBtn">copiar</button>
+          </div>
         </div>
       </div>
 
