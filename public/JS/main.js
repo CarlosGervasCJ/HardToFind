@@ -5,6 +5,11 @@ const FOV         = 720;
 const ZOOM        = (1.5 * (720 / FOV)).toFixed(2);
 const API_BASE    = 'https://hardtofindapi.vercel.app/api/search-spherex';
 
+const BAND_COLORS = {
+  d1:'#10b981', d2:'#06b6d4', d3:'#f59e0b',
+  d4:'#f78166', d5:'#bc8cff', d6:'#38bdf8',
+};
+
 const BAND_DATA = {
   d1:{ label:'D1', wl:'0.75 – 1.10 µm', heading:'Near-Infrared Optical Boundary', desc:'Ideal for detecting low-mass stars, brown dwarfs, and young stellar objects.', flux:'142.5 mJy', snr:'31.8 σ', color:'#10b981', range:[0,17] },
   d2:{ label:'D2', wl:'1.10 – 1.60 µm', heading:'H-Band Infrared Window', desc:'Deep analysis of distant galaxies and trans-Neptunian objects with methane reflectance.', flux:'188.2 mJy', snr:'38.4 σ', color:'#06b6d4', range:[17,34] },
@@ -14,12 +19,53 @@ const BAND_DATA = {
   d6:{ label:'D6', wl:'4.50 – 5.00 µm', heading:'Deep Thermal Infrared Limit', desc:'Upper SPHEREx limit — cosmic background scanning and highly reddened source detection.', flux:'118.9 mJy', snr:'29.6 σ', color:'#38bdf8', range:[85,102] },
 };
 
+/* Os 5 Presets Exatos com respetivas imagens */
 const PRESETS = [
-  { id: 'barnard', name: "Barnard's Star", ra: 269.45208, dec: 4.69333, band: 'd5', radius: 60, fov: '0.15°', type: 'Red Dwarf', flux: '142.5 mJy', desc: "Red Dwarf with extreme proper motion across the sky.", image: 'images/barnard.jpg' },
-  { id: 'epsilon', name: "Epsilon Indi B", ra: 331.04375, dec: -56.78278, band: 'd3', radius: 60, fov: '0.20°', type: 'Brown Dwarf', flux: '188.2 mJy', desc: "Binary Brown Dwarf System.", image: 'images/epsilon.jpg' },
-  { id: 'wise', name: "WISE 0855", ra: 133.79513, dec: -7.24515, band: 'd5', radius: 60, fov: '0.10°', type: 'Sub-Brown Dwarf', flux: '92.4 mJy', desc: "Sub-Brown Dwarf (Fast Moving).", image: 'images/wise0855.jpg' },
-  { id: 'rw_aur', name: "RW Aurigae", ra: 76.95642, dec: 30.40142, band: 'd4', radius: 60, fov: '0.10°', type: 'Variable Star', flux: '150.0 mJy', desc: "Variable Star Systems.", image: 'images/rw_aur.jpg' },
-  { id: 'r_dra', name: "R Draconis", ra: 248.16750, dec: 66.75500, band: 'd5', radius: 60, fov: '0.20°', type: 'Mira Variable', flux: '210.0 mJy', desc: "Mira-type Pulsating Variable Star.", image: 'images/r_dra.jpg' }
+  {
+    id: 'barnard',
+    name: "Barnard's Star",
+    ra: 269.45208, dec: 4.69333, band: 'd5', radius: 60, fov: '0.15°',
+    type: 'Red Dwarf',
+    flux: '142.5 mJy',
+    desc: "Red Dwarf with extreme proper motion across the sky.",
+    image: 'images/barnard.jpg'
+  },
+  {
+    id: 'epsilon',
+    name: "Epsilon Indi B",
+    ra: 331.04375, dec: -56.78278, band: 'd3', radius: 60, fov: '0.20°',
+    type: 'Brown Dwarf',
+    flux: '188.2 mJy',
+    desc: "Binary Brown Dwarf System.",
+    image: 'images/epsilon.jpg'
+  },
+  {
+    id: 'wise',
+    name: "WISE 0855",
+    ra: 133.79513, dec: -7.24515, band: 'd5', radius: 60, fov: '0.10°',
+    type: 'Sub-Brown Dwarf',
+    flux: '92.4 mJy',
+    desc: "Sub-Brown Dwarf (Fast Moving).",
+    image: 'images/wise0855.jpg'
+  },
+  {
+    id: 'rw_aur',
+    name: "RW Aurigae",
+    ra: 76.95642, dec: 30.40142, band: 'd4', radius: 60, fov: '0.10°',
+    type: 'Variable Star',
+    flux: '150.0 mJy',
+    desc: "Variable Star Systems.",
+    image: 'images/rw_aur.jpg'
+  },
+  {
+    id: 'r_dra',
+    name: "R Draconis",
+    ra: 248.16750, dec: 66.75500, band: 'd5', radius: 60, fov: '0.20°',
+    type: 'Mira Variable',
+    flux: '210.0 mJy',
+    desc: "Mira-type Pulsating Variable Star.",
+    image: 'images/r_dra.jpg'
+  }
 ];
 
 let configOpen   = false;
@@ -29,7 +75,7 @@ let activeBand   = 'd5';
 let barHeights   = [];
 let currentPreset = PRESETS[0];
 
-/* Elementos DOM principais */
+/* Elementos DOM */
 const frame       = document.getElementById('wvFrame');
 const wvCol       = document.getElementById('wv-col');
 const statusDot   = document.getElementById('statusDot');
@@ -53,50 +99,6 @@ const targetFovEl    = document.getElementById('targetFov');
 const targetBandEl   = document.getElementById('targetBand');
 const targetFluxEl   = document.getElementById('targetFlux');
 const targetImgEl    = document.getElementById('targetImg');
-
-/* Mobile Drawer Controls */
-const mobileToggle = document.getElementById('mobile-menu-toggle');
-const mobileDrawer = document.getElementById('mobileDrawer');
-const mobileOverlay = document.getElementById('mobileDrawerOverlay');
-const closeMobileDrawer = document.getElementById('closeMobileDrawer');
-const searchBtnMobile = document.getElementById('searchBtnMobile');
-
-function toggleMobileDrawer(open) {
-  if (open) {
-    mobileDrawer.classList.add('is-open');
-    mobileOverlay.classList.add('is-active');
-  } else {
-    mobileDrawer.classList.remove('is-open');
-    mobileOverlay.classList.remove('is-active');
-  }
-}
-
-function syncInputs(source) {
-  if (source === 'mobile') {
-    document.getElementById('raInput').value = document.getElementById('raInputMobile').value;
-    document.getElementById('decInput').value = document.getElementById('decInputMobile').value;
-    document.getElementById('bandInput').value = document.getElementById('bandInputMobile').value;
-    document.getElementById('radiusInput').value = document.getElementById('radiusInputMobile').value;
-    document.getElementById('speedInput').value = document.getElementById('speedInputMobile').value;
-  } else {
-    document.getElementById('raInputMobile').value = document.getElementById('raInput').value;
-    document.getElementById('decInputMobile').value = document.getElementById('decInput').value;
-    document.getElementById('bandInputMobile').value = document.getElementById('bandInput').value;
-    document.getElementById('radiusInputMobile').value = document.getElementById('radiusInput').value;
-    document.getElementById('speedInputMobile').value = document.getElementById('speedInput').value;
-  }
-}
-
-mobileToggle?.addEventListener('click', () => { syncInputs('desktop'); toggleMobileDrawer(true); });
-closeMobileDrawer?.addEventListener('click', () => toggleMobileDrawer(false));
-mobileOverlay?.addEventListener('click', () => toggleMobileDrawer(false));
-
-searchBtnMobile?.addEventListener('click', () => {
-  syncInputs('mobile');
-  toggleMobileDrawer(false);
-  loadWiseView();
-  searchSPHEREx();
-});
 
 function initPresets() {
   if (!presetSelect) return;
@@ -146,7 +148,6 @@ function loadSelectedPresetToObservatory() {
   document.getElementById('decInput').value    = currentPreset.dec;
   document.getElementById('bandInput').value   = currentPreset.band;
   document.getElementById('radiusInput').value = currentPreset.radius;
-  syncInputs('desktop');
 
   setBand(currentPreset.band);
   loadWiseView();
@@ -166,15 +167,12 @@ function loadFirefly(fitsUrl) {
 }
 
 function applyWVLayout(showNav) {
-  if (window.innerWidth <= 1024) {
-    frame.style.marginLeft = '0px';
-    frame.style.height = '100%';
-    return;
-  }
   const h      = wvCol.offsetHeight;
   const offset = showNav ? 0 : Math.min(NAV_LEFT_PX, wvCol.offsetWidth * 0.4);
-  frame.style.marginTransform = `translate3d(-${offset}px, 0, 0)`;
-  frame.style.height = `${h}px`;
+  frame.style.transition = 'margin-left 0.3s cubic-bezier(0.16,1,0.3,1)';
+  frame.style.marginLeft = `-${offset}px`;
+  frame.style.height     = `${h}px`;
+  setTimeout(() => { frame.style.transition = ''; }, 350);
 }
 
 function buildWVHash() {
@@ -230,7 +228,7 @@ function setBand(bandKey) {
     } else {
       bar.classList.remove('active-group');
       bar.style.background = 'rgba(16,185,129,0.25)';
-      bar.style.opacity    = '0.4';
+      bar.style.opacity    = '0.5';
     }
   });
 
@@ -250,6 +248,12 @@ function showEmpty(type, msg) {
     emptyDiv.innerHTML = `<div class="empty-icon" style="opacity:.35">⏳</div><div class="empty-title">Consultando IRSA…</div>`;
     return;
   }
+  if (type === 'irsa-down') {
+    emptyDiv.classList.add('irsa-down');
+    emptyDiv.innerHTML = `<div class="empty-icon">⚠️</div><div class="empty-title">Serviços IRSA indisponíveis</div>
+      <div class="fallback-note"><strong>WiseView operacional.</strong><br><br>Visualização à esquerda ativa.<br><span style="font-size:10px;opacity:.7;">↳ ${msg||''}</span></div>`;
+    return;
+  }
   emptyDiv.innerHTML = `<div class="empty-icon">❌</div><div class="empty-title" style="color:var(--danger)">Erro na pesquisa</div><div class="fallback-note">${msg||''}</div>`;
 }
 
@@ -265,55 +269,156 @@ async function searchSPHEREx() {
 
   setStatus('busy','Consultando IRSA…');
   searchBtn.classList.add('loading');
+  searchBtn.textContent = '⟳';
   metaBtn.disabled = true;
   showEmpty('loading');
 
   try {
     const res = await fetch(`${API_BASE}?${new URLSearchParams({ra,dec,band,radius})}`);
-    if (!res.ok) throw new Error(`Erro ${res.status}`);
+    if (!res.ok) {
+      let m = `Erro ${res.status}`;
+      try { m = (await res.json()).message || m; } catch(_){}
+      throw new Error(m);
+    }
     const data = await res.json();
     lastResult = data;
+
     const record = data.data || data;
     const fitsUrl = record.fits_url || record.access_url;
 
-    hideEmpty();
-    loadFirefly(fitsUrl);
+    if (fitsUrl) {
+      hideEmpty();
+      loadFirefly(fitsUrl);
+    } else { hideEmpty(); loadFirefly(); }
+
+    if (record.energy_bandpassname) {
+      const bMatch = record.energy_bandpassname.toLowerCase();
+      for (const k of Object.keys(BAND_DATA)) {
+        if (bMatch.includes(k)) {
+          setBand(k);
+          break;
+        }
+      }
+    } else if (data.band && BAND_DATA[data.band]) {
+      setBand(data.band);
+    }
 
     metaBtn.disabled = false;
-    setStatus('ok', 'OK');
+    const sep = record.separation_arcsec;
+    setStatus('ok', sep !== undefined ? `Match a ${Number(sep).toFixed(2)}″` : 'OK');
 
   } catch(err) {
-    showEmpty('error', err.message);
-    setStatus('err', 'Erro na consulta');
+    const msg = err.message || 'Erro desconhecido';
+    const down = /irsa|caltech|timeout|network|unavailable|503|502|504/i.test(msg);
+    showEmpty(down ? 'irsa-down' : 'error', msg);
+    setStatus('err', down ? 'IRSA indisponível' : msg);
     loadFirefly();
   } finally {
     searchBtn.classList.remove('loading');
+    searchBtn.innerHTML = '<i data-lucide="telescope" style="width:13px;height:13px"></i> Pesquisar';
+    if (window.lucide) lucide.createIcons();
   }
 }
 
 function openMeta() {
   if (!lastResult) return;
   const d = lastResult.data || lastResult;
-  let html = `<div class="meta-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 6px;">`;
-  for (const [key, val] of Object.entries(d)) {
-    html += `<div class="meta-item"><div class="key">${key}</div><div class="val">${val}</div></div>`;
+  const topInfo = {
+    status: lastResult.status,
+    period: lastResult.period,
+    period_label: lastResult.period_label
+  };
+
+  const allParams = { ...topInfo, ...d };
+
+  let html = `<div class="meta-section-title">Parâmetros Completos da Observação (IRSA / SPHEREx)</div>`;
+  html += `<div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 6px;">`;
+
+  for (const [key, val] of Object.entries(allParams)) {
+    if (key === 'cloud_access') continue;
+    let displayVal = val;
+    if (typeof val === 'boolean') displayVal = val ? 'True' : 'False';
+    if (val === null || val === undefined || val === '') displayVal = '—';
+    if (typeof val === 'number') displayVal = Number(val).toLocaleString(undefined, {maximumFractionDigits: 5});
+
+    html += `
+      <div class="meta-item" style="padding: 6px 8px;">
+        <div class="key" style="font-size:9px; font-family:var(--font-mono); color:var(--text-muted);">${key}</div>
+        <div class="val" style="font-size:11px; font-family:var(--font-mono); word-break:break-all; color:${key.includes('url') ? 'var(--cosmic-emerald)' : 'var(--text)'};">${displayVal}</div>
+      </div>
+    `;
   }
   html += `</div>`;
+
+  if (d.cloud_access) {
+    html += `
+      <div class="meta-section-title">Cloud Access (AWS)</div>
+      <div class="meta-item" style="padding: 8px; font-size:11px; font-family:var(--font-mono); word-break:break-all; color:var(--cyan-glow);">
+        ${typeof d.cloud_access === 'object' ? JSON.stringify(d.cloud_access) : d.cloud_access}
+      </div>
+    `;
+  }
+
+  const fitsUrl = d.fits_url || d.access_url;
+  if (fitsUrl) {
+    html += `
+      <div class="fits-url-box" id="fitsUrlBox" style="display:flex; margin-top:12px;">
+        <span class="fits-url-text" id="fitsUrlText">${fitsUrl}</span>
+        <button class="copy-btn" id="copyFitsBtn">copiar</button>
+      </div>
+      <button class="tb-btn primary" id="sendToFireflyBtn" style="width:100%; margin-top:10px; justify-content:center;">
+        <i data-lucide="play" style="width:13px;height:13px"></i>
+        <span>Carregar FITS diretamente no Firefly</span>
+      </button>
+    `;
+  }
+
   metaGrid.innerHTML = html;
+  if (window.lucide) lucide.createIcons();
+
+  const sendBtn = document.getElementById('sendToFireflyBtn');
+  if (sendBtn && fitsUrl) {
+    sendBtn.addEventListener('click', () => {
+      loadFirefly(fitsUrl);
+      closeMeta();
+      setStatus('ok', 'FITS carregado no Firefly com sucesso!');
+    });
+  }
+
+  const copyBtnEl = document.getElementById('copyFitsBtn');
+  if (copyBtnEl && fitsUrl) {
+    copyBtnEl.addEventListener('click', () => {
+      navigator.clipboard.writeText(fitsUrl).then(() => {
+        copyBtnEl.textContent = '✓ copiado';
+        setTimeout(() => { copyBtnEl.textContent = 'copiar'; }, 1500);
+      });
+    });
+  }
+
   metaOverlay.classList.add('visible');
 }
 
 function closeMeta() { metaOverlay.classList.remove('visible'); }
 
-searchBtn?.addEventListener('click', () => { loadWiseView(); searchSPHEREx(); });
-configBtn?.addEventListener('click', () => {
+searchBtn.addEventListener('click', () => { loadWiseView(); searchSPHEREx(); });
+
+configBtn.addEventListener('click', () => {
   configOpen = !configOpen;
+  configBtn.querySelector('span') && (configBtn.querySelector('span').textContent = configOpen ? 'Fechar config.' : 'Config. WiseView');
   applyWVLayout(configOpen);
 });
 
-metaBtn?.addEventListener('click', openMeta);
-metaClose?.addEventListener('click', closeMeta);
-metaOverlay?.addEventListener('click', e => { if(e.target===metaOverlay) closeMeta(); });
+metaBtn.addEventListener('click', openMeta);
+metaClose.addEventListener('click', closeMeta);
+metaOverlay.addEventListener('click', e => { if(e.target===metaOverlay) closeMeta(); });
+
+document.getElementById('bandInput')?.addEventListener('change', e => setBand(e.target.value));
+
+['raInput','decInput','bandInput','radiusInput','speedInput'].forEach(id => {
+  document.getElementById(id)?.addEventListener('keydown', e => {
+    if(e.key==='Enter') { loadWiseView(); searchSPHEREx(); }
+  });
+});
 
 window.addEventListener('resize', () => applyWVLayout(configOpen));
 
