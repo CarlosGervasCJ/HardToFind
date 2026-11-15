@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="meta-title">hardtofind — SPHEREx Mission & Planet X Search</title>
+    <title id="meta-title">HardToFind</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -32,42 +32,99 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <link rel="stylesheet" href="CSS/style.css">
+
+    <!-- Embedded Custom Animations: Fade-In, Fade-Out, Slide-Up & Glows -->
+    <style>
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(1.03); }
+        }
+
+        /* Animações de Entrada e Saída (Aparecimento e Desvanecimento) */
+        .fade-element {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .fade-element.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-element.is-hidden {
+            opacity: 0;
+            transform: translateY(-16px);
+        }
+
+        .animate-float {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        .animate-glow {
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        /* Fluid Transitions para os cards e widgets */
+        .widget-card {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .widget-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 16px 32px -10px rgba(16, 185, 129, 0.2);
+        }
+
+        header, .backdrop-blur-md {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
 </head>
 <body class="bg-spaceBlack text-slate-100 font-sans antialiased overflow-x-hidden selection:bg-emerald-500 selection:text-slate-950 relative">
 
-    <!-- Coherent CSS Space Background -->
+    <!-- Coherent CSS Space Background with animated glows -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px]"></div>
-        <div class="absolute top-1/3 -right-40 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[140px]"></div>
-        <div class="absolute -bottom-40 left-1/4 w-[500px] h-[500px] bg-amber-600/10 rounded-full blur-[120px]"></div>
+        <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] animate-glow"></div>
+        <div class="absolute top-1/3 -right-40 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[140px] animate-glow" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-40 left-1/4 w-[500px] h-[500px] bg-amber-600/10 rounded-full blur-[120px] animate-glow" style="animation-delay: 4s;"></div>
         <div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.04]"></div>
     </div>
 
     <!-- Header & Navbar -->
-    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-spaceBlack/80 border-b border-emerald-900/30">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <header class="fixed top-0 left-0 right-0 z-50 bg-spaceBlack/80 border-b border-emerald-900/30 transition-all">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <!-- Brand Logo -->
             <a href="#" class="flex items-center gap-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 via-cyan-500 to-amber-500 flex items-center justify-center shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 via-cyan-500 to-amber-500 flex items-center justify-center shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-300">
                     <i data-lucide="orbit" class="w-4 h-4 text-slate-950"></i>
                 </div>
                 <div>
-                    <span class="text-base font-bold tracking-tight text-white">hard<span class="text-emerald-400">tofind</span></span>
-                    <span class="block text-[9px] tracking-widest text-emerald-500 uppercase font-mono">SPHEREx / Planet X</span>
+                    <span class="text-base font-bold tracking-tight text-white">Hard<span class="text-emerald-400">ToFind</span></span>
                 </div>
             </a>
 
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-6 text-xs font-medium text-slate-300">
+                <a href="#missao" data-i18n="nav_mission" class="hover:text-emerald-400 transition-colors duration-200">How It Works</a>
+                <a href="#fontes" data-i18n="nav_sources" class="hover:text-emerald-400 transition-colors duration-200">Data & Tools</a>
+                <a href="#targets" data-i18n="nav_targets" class="hover:text-emerald-400 transition-colors duration-200">Test Targets</a>
+                <a href="main.html" data-i18n="nav_start" class="text-emerald-400 font-semibold hover:text-emerald-300 transition-colors duration-200">Start Observation</a>
+            </nav>
+
             <!-- Action CTA & Language Selector -->
             <div class="hidden md:flex items-center gap-3">
-                <!-- Language Toggle Button -->
-                <button onclick="toggleLanguage()" id="lang-btn" class="px-3 py-1.5 rounded-lg backdrop-blur-md bg-slate-900/80 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold hover:bg-emerald-500/10 transition-all flex items-center gap-1.5">
+                <button onclick="toggleLanguage()" id="lang-btn" class="px-3 py-1.5 rounded-lg bg-slate-900/80 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold hover:bg-emerald-500/10 hover:border-emerald-400 transition-all duration-300 flex items-center gap-1.5">
                     <i data-lucide="globe" class="w-3.5 h-3.5"></i>
                     <span id="lang-label">PT / EN</span>
                 </button>
-
-                <a href="#bandas" data-i18n="nav_spectroscopy" class="px-4 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium transition-all shadow-sm">
-                    Open Spectroscopy
-                </a>
             </div>
 
             <!-- Mobile Menu Toggle -->
@@ -77,16 +134,16 @@
         </div>
 
         <!-- Mobile Navigation Menu -->
-        <div id="mobile-menu" class="hidden md:hidden backdrop-blur-md bg-spaceBlack/95 border-t border-emerald-900/20 px-6 py-4 space-y-3">
-            <a href="#missao" data-i18n="nav_mission" class="block text-slate-300 hover:text-emerald-400 text-xs font-medium">The Mission</a>
-            <a href="#bandas" data-i18n="nav_bands" class="block text-slate-300 hover:text-emerald-400 text-xs font-medium">108 Bands</a>
-            <a href="#planetax" data-i18n="nav_planetax" class="block text-slate-300 hover:text-emerald-400 text-xs font-medium">Planet X Hunt</a>
-            <a href="https://gemini.google.com/notebook/97580cb5-5768-42ab-a7cb-6eb61bdca277" target="_blank" class="block text-amber-400 text-xs font-medium">Notebook projectX</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-spaceBlack/95 border-t border-emerald-900/20 px-6 py-4 space-y-3">
+            <a href="#missao" data-i18n="nav_mission" class="block text-slate-300 hover:text-emerald-400 text-xs font-medium">How It Works</a>
+            <a href="#fontes" data-i18n="nav_sources" class="block text-slate-300 hover:text-emerald-400 text-xs font-medium">Data & Tools</a>
+            <a href="#targets" data-i18n="nav_targets" class="block text-slate-300 hover:text-emerald-400 text-xs font-medium">Test Targets</a>
+            <a href="main.html" data-i18n="nav_start" class="block text-emerald-400 text-xs font-semibold">Start Observation</a>
             <div class="pt-3 border-t border-emerald-900/20 flex items-center justify-between">
-                <button onclick="toggleLanguage()" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-emerald-500/30 text-emerald-400 text-[11px] font-mono font-bold">
-                    Switch Language
+                <span class="text-xs text-slate-400 font-mono">Language / Idioma:</span>
+                <button onclick="toggleLanguage()" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
+                    Switch PT / EN
                 </button>
-                <a href="#bandas" data-i18n="nav_explore" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-xs">Explore Spectra</a>
             </div>
         </div>
     </header>
@@ -96,371 +153,338 @@
         <!-- Hero Section -->
         <section id="missao" class="relative pt-28 pb-16 md:pt-36 md:pb-24 flex items-center justify-center">
             <div class="max-w-6xl mx-auto px-6 text-center">
-                <!-- Floating Badge -->
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-md bg-slate-900/60 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold tracking-wide uppercase mb-6 shadow-md shadow-emerald-950/40">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span data-i18n="hero_badge">Deep Infrared Spectroscopy • NASA / Caltech IRSA</span>
-                </div>
-
-                <!-- Headline -->
-                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.15] mb-6">
-                    <span data-i18n="hero_title_1">Unveiling the invisible in</span> <span class="text-emerald-400 bg-clip-text" data-i18n="hero_title_highlight">108 infrared colors</span> <span data-i18n="hero_title_2">to help find Planet X.</span>
+                
+				<!-- Headline -->
+                <h1 class="fade-element text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.2] mb-8">
+                    <span data-i18n="hero_title_1">Explore deep space imagery and help</span> <span class="text-emerald-400 bg-clip-text" data-i18n="hero_title_highlight">track moving worlds</span> <span data-i18n="hero_title_2">across the cosmos.</span>
                 </h1>
 
                 <!-- Subheadline -->
-                <p data-i18n="hero_desc" class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-light leading-relaxed mb-8">
-                    The <strong>HardToFind</strong> project combines the astrometric power of the SPHEREx space mission with spectral analysis to map thermal signatures at the borders of the Solar System.
+                <p data-i18n="hero_desc" class="fade-element text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-light leading-relaxed mb-10">
+                    The <strong>HardToFind</strong> project explores the <strong>next frontier</strong> by mapping <strong>108 bands</strong> of infrared space data from SPHEREx, WISEView, and Firefly into an optimized search engine, making research accessible to everyone.
                 </p>
 
                 <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <a href="#bandas" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-amber-500 text-slate-950 font-bold text-xs hover:opacity-95 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 group">
-                        <span data-i18n="btn_explore">Explore Spectra (D1-D6)</span>
-                        <i data-lucide="sliders" class="w-4 h-4 group-hover:rotate-45 transition-transform"></i>
+                <div class="fade-element flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="main.html" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-amber-500 text-slate-950 font-bold text-xs hover:opacity-95 hover:scale-[1.02] transition-all duration-300 shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 group">
+                        <span data-i18n="btn_start">Start Observation</span>
+                        <i data-lucide="telescope" class="w-4 h-4 group-hover:scale-110 transition-transform duration-300"></i>
                     </a>
-                    <a href="#planetax" class="w-full sm:w-auto px-6 py-3 rounded-xl backdrop-blur-md bg-slate-900/60 border border-slate-800 text-slate-200 font-semibold text-xs hover:border-emerald-500/50 transition-all flex items-center justify-center gap-2">
-                        <i data-lucide="telescope" class="w-4 h-4 text-emerald-400"></i>
-                        <span data-i18n="btn_hypothesis">The Planet X Hypothesis</span>
+                    <a href="#fontes" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-200 font-semibold text-xs hover:border-emerald-500/50 hover:bg-slate-800/60 transition-all duration-300 flex items-center justify-center gap-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+                        <span data-i18n="btn_tools">Explore Data & Tools</span>
                     </a>
                 </div>
 
-                <!-- Stats Bar -->
-                <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                    <div class="backdrop-blur-md bg-slate-900/50 p-4 rounded-xl border border-emerald-500/20 text-center">
-                        <p class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">108</p>
-                        <p data-i18n="stat_1" class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Spectral Bands</p>
+                <!-- Simple Explanation Grid -->
+                <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 text-left max-w-5xl mx-auto">
+                    <div class="fade-element widget-card bg-slate-900/50 p-6 rounded-2xl border border-emerald-500/20">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
+                            <i data-lucide="database" class="w-5 h-5"></i>
+                        </div>
+                        <h3 data-i18n="card_1_title" class="text-base font-bold text-white mb-2">1. Multi-Mission Archives</h3>
+                        <p data-i18n="card_1_desc" class="text-xs text-slate-300 leading-relaxed">We gather deep infrared data and sky photos from NASA's SPHEREx mission and WISE time-lapse archives.</p>
                     </div>
-                    <div class="backdrop-blur-md bg-slate-900/50 p-4 rounded-xl border border-emerald-500/20 text-center">
-                        <p class="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-mono">0.75-5.0µm</p>
-                        <p data-i18n="stat_2" class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Infrared Spectrum</p>
+                    <div class="fade-element widget-card bg-slate-900/50 p-6 rounded-2xl border border-emerald-500/20">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center mb-4">
+                            <i data-lucide="search" class="w-5 h-5"></i>
+                        </div>
+                        <h3 data-i18n="card_2_title" class="text-base font-bold text-white mb-2">2. Optimized Filter API</h3>
+                        <p data-i18n="card_2_desc" class="text-xs text-slate-300 leading-relaxed">Our custom filter engine quickly processes coordinates, filters by specific spectral bands, and calculates numerical approximations for SIA queries.</p>
                     </div>
-                    <div class="backdrop-blur-md bg-slate-900/50 p-4 rounded-xl border border-emerald-500/20 text-center">
-                        <p class="text-2xl sm:text-3xl font-extrabold text-amber-400 font-mono">99.8%</p>
-                        <p data-i18n="stat_3" class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Sky Coverage</p>
-                    </div>
-                    <div class="backdrop-blur-md bg-slate-900/50 p-4 rounded-xl border border-emerald-500/20 text-center">
-                        <p class="text-2xl sm:text-3xl font-extrabold text-emerald-300 font-mono">DR1 / QR3</p>
-                        <p data-i18n="stat_4" class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Active IRSA Data</p>
+                    <div class="fade-element widget-card bg-slate-900/50 p-6 rounded-2xl border border-emerald-500/20">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
+                            <i data-lucide="eye" class="w-5 h-5"></i>
+                        </div>
+                        <h3 data-i18n="card_3_title" class="text-base font-bold text-white mb-2">3. Advanced Visualization</h3>
+                        <p data-i18n="card_3_desc" class="text-xs text-slate-300 leading-relaxed">Leverage WISEView for motion animations and Firefly Viewer for deep FITS inspection and multi-band analysis.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Interactive 108 Bands Section -->
-        <section id="bandas" class="py-16 relative">
+        <!-- Sources & Tools Section -->
+        <section id="fontes" class="py-20 relative">
             <div class="max-w-6xl mx-auto px-6">
-                <div class="text-center max-w-2xl mx-auto mb-12">
-                    <h2 data-i18n="sim_subtitle" class="text-[11px] font-mono uppercase tracking-widest text-emerald-400 mb-2">Spectral Simulator</h2>
-                    <h3 data-i18n="sim_title" class="text-2xl sm:text-3xl font-bold text-white tracking-tight">SPHEREx's 108 Infrared Colors</h3>
-                    <p data-i18n="sim_desc" class="text-slate-300 mt-2 text-xs sm:text-sm">Select a primary SPHEREx band (D1 to D6) to visualize wavelength response, intensity simulation, and thermal profile associated with searching for cold bodies in deep space.</p>
+                <div class="text-center max-w-2xl mx-auto mb-14 fade-element">
+                    <h2 data-i18n="sources_subtitle" class="text-[11px] font-mono uppercase tracking-widest text-emerald-400 mb-4">Data Sources & Visualization Tools</h2>
+                    <h3 data-i18n="sources_title" class="text-2xl sm:text-3xl font-bold text-white tracking-tight">SPHEREx, WISEView & Firefly Viewer</h3>
+                    <p data-i18n="sources_desc" class="text-slate-300 mt-4 text-xs sm:text-sm">Combining multi-band infrared spectroscopy, time-lapse sky animations, and professional FITS image analysis.</p>
                 </div>
 
-                <!-- Interactive Spectroscopic Console -->
-                <div class="backdrop-blur-md bg-slate-900/70 rounded-2xl p-5 md:p-8 border border-emerald-500/30 max-w-4xl mx-auto shadow-xl">
-                    <!-- Band Selector Tabs -->
-                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6">
-                        <button onclick="setBand('d1')" id="btn-d1" class="band-btn py-2 px-3 rounded-lg font-mono text-[11px] font-bold transition-all bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20">
-                            D1 (0.75µm)
-                        </button>
-                        <button onclick="setBand('d2')" id="btn-d2" class="band-btn py-2 px-3 rounded-lg font-mono text-[11px] font-bold transition-all bg-slate-900/80 text-slate-300 border border-emerald-500/20 hover:border-emerald-500/50">
-                            D2 (1.10µm)
-                        </button>
-                        <button onclick="setBand('d3')" id="btn-d3" class="band-btn py-2 px-3 rounded-lg font-mono text-[11px] font-bold transition-all bg-slate-900/80 text-slate-300 border border-emerald-500/20 hover:border-emerald-500/50">
-                            D3 (1.70µm)
-                        </button>
-                        <button onclick="setBand('d4')" id="btn-d4" class="band-btn py-2 px-3 rounded-lg font-mono text-[11px] font-bold transition-all bg-slate-900/80 text-slate-300 border border-emerald-500/20 hover:border-emerald-500/50">
-                            D4 (2.60µm)
-                        </button>
-                        <button onclick="setBand('d5')" id="btn-d5" class="band-btn py-2 px-3 rounded-lg font-mono text-[11px] font-bold transition-all bg-slate-900/80 text-slate-300 border border-emerald-500/20 hover:border-emerald-500/50">
-                            D5 (3.80µm)
-                        </button>
-                        <button onclick="setBand('d6')" id="btn-d6" class="band-btn py-2 px-3 rounded-lg font-mono text-[11px] font-bold transition-all bg-slate-900/80 text-slate-300 border border-emerald-500/20 hover:border-emerald-500/50">
-                            D6 (5.00µm)
-                        </button>
-                    </div>
-
-                    <!-- Display Panel -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-                        <!-- Left: Visual Simulated Spectrum Feedback -->
-                        <div class="space-y-4">
-                            <div class="p-4 rounded-xl bg-slate-950/80 border border-emerald-500/20 relative overflow-hidden">
-                                <div id="spectrum-glow" class="absolute inset-0 bg-emerald-500/10 blur-xl transition-all duration-500"></div>
-                                <div class="relative z-10">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <span id="band-title" class-[10px] font-mono text-emerald-400 uppercase tracking-wider">SPHEREx Band: spherex-d1</span>
-                                        <span id="band-wavelength" class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono">0.75 - 1.10 µm</span>
-                                    </div>
-                                    <h4 id="band-heading" class="text-sm font-bold text-white mb-1.5">Near-Infrared Optical Boundary</h4>
-                                    <p id="band-desc" class="text-slate-300 text-xs leading-relaxed">
-                                        Ideal for detecting low-mass stars, brown dwarfs, and young stellar objects in the all-sky survey.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Technical telemetry grid -->
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="backdrop-blur-md bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                                    <p data-i18n="flux_label" class-[10px] text-slate-400 mb-0.5 font-mono">Estimated Thermal Flux</p>
-                                    <p id="telemetry-flux" class="text-sm font-bold text-white font-mono">142.5 mJy</p>
-                                </div>
-                                <div class="backdrop-blur-md bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                                    <p data-i18n="snr_label" class-[10px] text-slate-400 mb-0.5 font-mono">SNR Sensitivity</p>
-                                    <p id="telemetry-snr" class="text-sm font-bold text-cyan-400 font-mono">31.8 σ</p>
-                                </div>
-                            </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    <!-- SPHEREx Card -->
+                    <div class="fade-element widget-card bg-slate-900/70 p-6 rounded-2xl border border-emerald-500/30 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between border-b border-emerald-900/30 pb-2">
+                            <span class="text-[11px] font-mono text-emerald-400 font-bold">SPHEREx</span>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-mono">108 Bands</span>
                         </div>
-
-                        <!-- Right: Simulated Spectral Chart / Visualizer -->
-                        <div class="backdrop-blur-md bg-slate-950/60 p-4 rounded-xl border border-emerald-500/20 flex flex-col justify-between h-60">
-                            <div class="flex items-center justify-between border-b border-emerald-900/30 pb-2">
-                                <span class="text-[10px] font-mono text-slate-400">SPECTRAL_CURVE_108CH</span>
-                                <span class="text-[10px] font-mono text-emerald-400 animate-pulse">● LIVE SYNC</span>
-                            </div>
-                            <!-- Mock Spectral Bars -->
-                            <div class="flex items-end justify-between gap-1 h-28 px-1 pt-2" id="spectrum-bars">
-                                <!-- Dynamically generated via JS -->
-                            </div>
-                            <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 pt-2 border-t border-emerald-900/30">
-                                <span data-i18n="channel_start">Channel 001 (0.75µm)</span>
-                                <span class="text-emerald-400" id="active-channel-label">Active Channel: D1</span>
-                                <span data-i18n="channel_end">Channel 108 (5.0µm)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Planet X Hunting Section -->
-        <section id="planetax" class="py-16 relative overflow-hidden">
-            <div class="max-w-6xl mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                    <div>
-                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full backdrop-blur-md bg-slate-900/60 border border-amber-500/30 text-amber-400 text-[10px] font-semibold uppercase mb-4" data-i18n="px_tag">
-                            Gravitational Hypothesis
-                        </div>
-                        <h3 data-i18n="px_title" class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-4">
-                            Scientific Hunt for Planet X in SPHEREx Images
-                        </h3>
-                        <p data-i18n="px_desc" class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-                            Distant objects in the Kuiper Belt and the hypothetical Planet Nine (Planet X) exhibit highly inclined and gravitationally clustered orbits. With SPHEREx's complete 108-color all-sky survey, we can track the blackbody thermal emission of a cold gas giant at hundreds of Astronomical Units (AU).
+                        <h4 data-i18n="spherex_heading" class="text-sm font-bold text-white">Spectral Fingerprints</h4>
+                        <p data-i18n="spherex_desc" class="text-slate-300 text-xs leading-relaxed">
+                            Maps the entire sky in 108 distinct infrared colors, identifying chemical compositions and thermal glow signatures.
                         </p>
-
-                        <!-- Methodology list -->
-                        <div class="space-y-3">
-                            <div class="flex items-start gap-2.5">
-                                <div class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                                    <i data-lucide="crosshair" class="w-3 h-3"></i>
-                                </div>
-                                <p class="text-slate-300 text-xs"><strong class="text-white" data-i18n="meth_1_title">High-Precision Astrometry:</strong> <span data-i18n="meth_1_desc">Detection of infinitesimal proper motion comparing epochs from 2025 and 2026.</span></p>
-                            </div>
-                            <div class="flex items-start gap-2.5">
-                                <div class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                                    <i data-lucide="crosshair" class="w-3 h-3"></i>
-                                </div>
-                                <p class="text-slate-300 text-xs"><strong class="text-white" data-i18n="meth_2_title">Blackbody Signature:</strong> <span data-i18n="meth_2_desc">Identification of cold infrared sources missing from traditional optical surveys.</span></p>
-                            </div>
-                            <div class="flex items-start gap-2.5">
-                                <div class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                                    <i data-lucide="crosshair" class="w-3 h-3"></i>
-                                </div>
-                                <p class="text-slate-300 text-xs"><strong class="text-white" data-i18n="meth_3_title">IRSA Integration:</strong> <span data-i18n="meth_3_desc">Automated queries via SIA API for validation of FITS and spectral cubes.</span></p>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- Interactive Planet X Card / Visualizer -->
-                    <div class="backdrop-blur-md bg-slate-900/70 p-6 rounded-2xl relative border border-amber-500/30 shadow-xl">
-                        <div class="absolute -top-3 -right-3 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between border-b border-emerald-900/30 pb-3">
-                                <span class="text-xs font-mono text-amber-400">CANDIDATE_TARGET_PX</span>
-                                <span data-i18n="px_active" class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-mono">Active Scan</span>
-                            </div>
-                            <div class="space-y-2.5">
-                                <div class="flex justify-between items-center text-xs">
-                                    <span data-i18n="px_dist" class="text-slate-400">Estimated Distance:</span>
-                                    <span class="font-mono text-white font-bold">400 - 800 AU</span>
-                                </div>
-                                <div class="flex justify-between items-center text-xs">
-                                    <span data-i18n="px_temp" class="text-slate-400">Equilibrium Temp:</span>
-                                    <span class="font-mono text-cyan-400 font-bold">~35 K (-238 °C)</span>
-                                </div>
-                                <div class="flex justify-between items-center text-xs">
-                                    <span data-i18n="px_peak" class="text-slate-400">SPHEREx Emission Peak:</span>
-                                    <span class="font-mono text-emerald-400 font-bold">Band D5 / D6 (3.8 - 5.0µm)</span>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 text-[11px] text-slate-300 flex items-center gap-2.5">
-                                <i data-lucide="info" class="w-4 h-4 text-amber-400 shrink-0"></i>
-                                <span data-i18n="px_note">The algorithm automatically scans parallax anomalies in DR1 and QR3 catalogs.</span>
-                            </div>
+                    <!-- WISEView Card -->
+                    <div class="fade-element widget-card bg-slate-900/70 p-6 rounded-2xl border border-cyan-500/30 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between border-b border-cyan-900/30 pb-2">
+                            <span class="text-[11px] font-mono text-cyan-400 font-bold">WISEView</span>
+                            <span class="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-[9px] font-mono">Time-Lapse</span>
                         </div>
+                        <h4 data-i18n="wise_heading" class="text-sm font-bold text-white">Motion Over Time</h4>
+                        <p data-i18n="wise_desc" class="text-slate-300 text-xs leading-relaxed">
+                            Animates years of sky observations to visually reveal objects moving across background stars.
+                        </p>
+                    </div>
+
+                    <!-- Firefly View Card -->
+                    <div class="fade-element widget-card bg-slate-900/70 p-6 rounded-2xl border border-amber-500/30 shadow-xl space-y-3 lg:col-span-1 md:col-span-2">
+                        <div class="flex items-center justify-between border-b border-amber-900/30 pb-2">
+                            <span class="text-[11px] font-mono text-amber-400 font-bold">Firefly Viewer</span>
+                            <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-mono">IPAC / NASA</span>
+                        </div>
+                        <h4 data-i18n="firefly_heading" class="text-sm font-bold text-white">Professional FITS & Tables</h4>
+                        <p data-i18n="firefly_desc" class="text-slate-300 text-xs leading-relaxed">
+                            Embedded Firefly instance for deep inspection of FITS images, contrast adjustment, and interactive multi-panel analysis.
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Notebook projectX Integration Banner -->
-        <section class="py-12 relative">
+        <!-- TARGET_PRESETS Section -->
+        <section id="targets" class="py-20 relative bg-slate-950/40 border-y border-emerald-900/20">
             <div class="max-w-6xl mx-auto px-6">
-                <div class="backdrop-blur-md bg-slate-900/70 p-8 rounded-2xl border border-emerald-500/30 text-center relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/10 via-cyan-900/10 to-amber-900/10 pointer-events-none"></div>
-                    <div class="relative z-10 max-w-xl mx-auto">
-                        <div class="w-12 h-12 mx-auto mb-4 rounded-xl backdrop-blur-md bg-slate-900 flex items-center justify-center border border-emerald-400/40 text-emerald-400 shadow-md shadow-emerald-500/20">
-                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                <div class="text-center max-w-2xl mx-auto mb-14 fade-element">
+                    <h2 data-i18n="targets_subtitle" class="text-[11px] font-mono uppercase tracking-widest text-amber-400 mb-4">Target Presets</h2>
+                    <h3 data-i18n="targets_title" class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Calibration & Test Targets</h3>
+                    <p data-i18n="targets_desc" class="text-slate-300 mt-4 text-xs sm:text-sm">Pre-configured astronomical presets used to test proper motion tracking, infrared flux emission, and fast-moving anomalies.</p>
+                </div>
+
+                <!-- Grid de Alvos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    
+                    <!-- Barnard's Star -->
+                    <div class="fade-element widget-card bg-slate-900/70 rounded-2xl border border-emerald-500/20 overflow-hidden shadow-xl flex flex-col justify-between group">
+                        <div class="h-40 bg-slate-950/80 border-b border-emerald-900/20 relative flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px] opacity-20 group-hover:scale-110 transition-transform duration-500"></div>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5 z-10 group-hover:bg-emerald-500/20 transition-colors">
+                                <i data-lucide="image" class="w-3.5 h-3.5"></i> Target Image Slot
+                            </span>
                         </div>
-                        <h3 class="text-xl sm:text-2xl font-bold text-white tracking-tight mb-2.5">
-                            <span data-i18n="repo_title_1">Research Repository</span> <span class="text-emerald-400">projectX</span>
-                        </h3>
-                        <p data-i18n="repo_desc" class="text-slate-300 text-xs mb-6 leading-relaxed">
-                            Follow Python source codes, Flask endpoints for IRSA SIA queries, MJD handling routines for 2025/2026, and astrometric analysis notebooks directly in the official workspace.
-                        </p>
-                        <a href="https://gemini.google.com/notebook/97580cb5-5768-42ab-a7cb-6eb61bdca277" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20">
-                            <span data-i18n="btn_repo">Access projectX Notebook</span>
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </a>
+                        <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">Preset: barnard</span>
+                                <h4 class="text-base font-bold text-white mt-0.5">Barnard's Star</h4>
+                                <p class="text-xs text-slate-300 mt-1 italic" data-i18n="t_barnard_type">Red Dwarf (Extreme Proper Motion)</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px] text-slate-400">
+                                <div class="flex justify-between"><span>RA:</span> <span class="text-white">269.45208°</span></div>
+                                <div class="flex justify-between"><span>DEC:</span> <span class="text-white">+4.69333°</span></div>
+                                <div class="flex justify-between"><span>FOV:</span> <span class="text-white">0.15°</span></div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Epsilon Indi B -->
+                    <div class="fade-element widget-card bg-slate-900/70 rounded-2xl border border-emerald-500/20 overflow-hidden shadow-xl flex flex-col justify-between group">
+                        <div class="h-40 bg-slate-950/80 border-b border-emerald-900/20 relative flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px] opacity-20 group-hover:scale-110 transition-transform duration-500"></div>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5 z-10 group-hover:bg-emerald-500/20 transition-colors">
+                                <i data-lucide="image" class="w-3.5 h-3.5"></i> Target Image Slot
+                            </span>
+                        </div>
+                        <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">Preset: epsilon</span>
+                                <h4 class="text-base font-bold text-white mt-0.5">Epsilon Indi B</h4>
+                                <p class="text-xs text-slate-300 mt-1 italic" data-i18n="t_epsilon_type">Binary Brown Dwarf System</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px] text-slate-400">
+                                <div class="flex justify-between"><span>RA:</span> <span class="text-white">331.04375°</span></div>
+                                <div class="flex justify-between"><span>DEC:</span> <span class="text-white">-56.78278°</span></div>
+                                <div class="flex justify-between"><span>FOV:</span> <span class="text-white">0.20°</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WISE 0855 -->
+                    <div class="fade-element widget-card bg-slate-900/70 rounded-2xl border border-emerald-500/20 overflow-hidden shadow-xl flex flex-col justify-between group">
+                        <div class="h-40 bg-slate-950/80 border-b border-emerald-900/20 relative flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px] opacity-20 group-hover:scale-110 transition-transform duration-500"></div>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5 z-10 group-hover:bg-emerald-500/20 transition-colors">
+                                <i data-lucide="image" class="w-3.5 h-3.5"></i> Target Image Slot
+                            </span>
+                        </div>
+                        <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">Preset: wise</span>
+                                <h4 class="text-base font-bold text-white mt-0.5">WISE 0855</h4>
+                                <p class="text-xs text-slate-300 mt-1 italic" data-i18n="t_wise_type">Sub-Brown Dwarf (Fast Moving)</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px] text-slate-400">
+                                <div class="flex justify-between"><span>RA:</span> <span class="text-white">133.79513°</span></div>
+                                <div class="flex justify-between"><span>DEC:</span> <span class="text-white">-7.24515°</span></div>
+                                <div class="flex justify-between"><span>FOV:</span> <span class="text-white">0.10°</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RW Aurigae -->
+                    <div class="fade-element widget-card bg-slate-900/70 rounded-2xl border border-emerald-500/20 overflow-hidden shadow-xl flex flex-col justify-between group">
+                        <div class="h-40 bg-slate-950/80 border-b border-emerald-900/20 relative flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px] opacity-20 group-hover:scale-110 transition-transform duration-500"></div>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5 z-10 group-hover:bg-emerald-500/20 transition-colors">
+                                <i data-lucide="image" class="w-3.5 h-3.5"></i> Target Image Slot
+                            </span>
+                        </div>
+                        <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">Preset: rw_aur</span>
+                                <h4 class="text-base font-bold text-white mt-0.5">RW Aurigae</h4>
+                                <p class="text-xs text-slate-300 mt-1 italic" data-i18n="t_rw_type">Variable Star Systems</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px] text-slate-400">
+                                <div class="flex justify-between"><span>RA:</span> <span class="text-white">76.95642°</span></div>
+                                <div class="flex justify-between"><span>DEC:</span> <span class="text-white">+30.40142°</span></div>
+                                <div class="flex justify-between"><span>FOV:</span> <span class="text-white">0.10°</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- R Draconis -->
+                    <div class="fade-element widget-card bg-slate-900/70 rounded-2xl border border-emerald-500/20 overflow-hidden shadow-xl flex flex-col justify-between group md:col-span-2 lg:col-span-2">
+                        <div class="h-40 bg-slate-950/80 border-b border-emerald-900/20 relative flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px] opacity-20 group-hover:scale-110 transition-transform duration-500"></div>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5 z-10 group-hover:bg-emerald-500/20 transition-colors">
+                                <i data-lucide="image" class="w-3.5 h-3.5"></i> Target Image Slot
+                            </span>
+                        </div>
+                        <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">Preset: r_dra</span>
+                                <h4 class="text-base font-bold text-white mt-0.5">R Draconis</h4>
+                                <p class="text-xs text-slate-300 mt-1 italic" data-i18n="t_r_type">Mira-type Pulsating Variable Star</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px] text-slate-400 flex flex-wrap gap-x-8 gap-y-1">
+                                <div><span>RA:</span> <span class="text-white">248.16750°</span></div>
+                                <div><span>DEC:</span> <span class="text-white">+66.75500°</span></div>
+                                <div><span>FOV:</span> <span class="text-white">0.20°</span></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-emerald-900/30 py-8 backdrop-blur-md bg-slate-950/80 mt-8 relative z-10">
+    <footer class="border-t border-emerald-900/30 py-8 bg-slate-950/80 mt-8 relative z-10">
         <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
             <div class="flex items-center gap-2.5">
                 <div class="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
                     <i data-lucide="orbit" class="w-3.5 h-3.5"></i>
                 </div>
-                <span class="font-bold text-white">hardtofind project © 2026</span>
+                <span class="font-bold text-white">HardToFind © 2026</span>
             </div>
             <div class="flex items-center gap-5">
-                <a href="#missao" data-i18n="foot_mission" class="hover:text-emerald-400 transition-colors">SPHEREx Mission</a>
-                <a href="#bandas" data-i18n="foot_spec" class="hover:text-emerald-400 transition-colors">Spectroscopy</a>
-                <a href="https://gemini.google.com/notebook/97580cb5-5768-42ab-a7cb-6eb61bdca277" target="_blank" data-i18n="foot_ws" class="hover:text-amber-400 transition-colors">projectX Workspace</a>
+                <a href="#missao" data-i18n="foot_mission" class="hover:text-emerald-400 transition-colors">How It Works</a>
+                <a href="#fontes" data-i18n="foot_sources" class="hover:text-emerald-400 transition-colors">Data & Tools</a>
+                <a href="#targets" data-i18n="foot_targets" class="hover:text-emerald-400 transition-colors">Test Targets</a>
+                <a href="main.html" data-i18n="foot_start" class="hover:text-emerald-400 transition-colors font-semibold">Start Observation</a>
             </div>
         </div>
     </footer>
 
-    <!-- Interactive Script & i18n logic -->
+    <!-- Interactive Script, Observer & i18n logic -->
     <script>
         const translations = {
             en: {
-                meta_title: "hardtofind — SPHEREx Mission & Planet X Search",
-                nav_spectroscopy: "Open Spectroscopy",
-                nav_mission: "The Mission",
-                nav_bands: "108 Bands",
-                nav_planetax: "Planet X Hunt",
-                nav_explore: "Explore Spectra",
-                hero_badge: "Deep Infrared Spectroscopy • NASA / Caltech IRSA",
-                hero_title_1: "Unveiling the invisible in",
-                hero_title_highlight: "108 infrared colors",
-                hero_title_2: "to help find Planet X.",
-                hero_desc: "The <strong>HardToFind</strong> project combines the astrometric power of the SPHEREx space mission with spectral analysis to map thermal signatures at the borders of the Solar System.",
-                btn_explore: "Explore Spectra (D1-D6)",
-                btn_hypothesis: "The Planet X Hypothesis",
-                stat_1: "Spectral Bands",
-                stat_2: "Infrared Spectrum",
-                stat_3: "Sky Coverage",
-                stat_4: "Active IRSA Data",
-                sim_subtitle: "Spectral Simulator",
-                sim_title: "SPHEREx's 108 Infrared Colors",
-                sim_desc: "Select a primary SPHEREx band (D1 to D6) to visualize wavelength response, intensity simulation, and thermal profile associated with searching for cold bodies in deep space.",
-                flux_label: "Estimated Thermal Flux",
-                snr_label: "SNR Sensitivity",
-                channel_start: "Channel 001 (0.75µm)",
-                channel_end: "Channel 108 (5.0µm)",
-                px_tag: "Gravitational Hypothesis",
-                px_title: "Scientific Hunt for Planet X in SPHEREx Images",
-                px_desc: "Distant objects in the Kuiper Belt and the hypothetical Planet Nine (Planet X) exhibit highly inclined and gravitationally clustered orbits. With SPHEREx's complete 108-color all-sky survey, we can track the blackbody thermal emission of a cold gas giant at hundreds of Astronomical Units (AU).",
-                meth_1_title: "High-Precision Astrometry:",
-                meth_1_desc: "Detection of infinitesimal proper motion comparing epochs from 2025 and 2026.",
-                meth_2_title: "Blackbody Signature:",
-                meth_2_desc: "Identification of cold infrared sources missing from traditional optical surveys.",
-                meth_3_title: "IRSA Integration:",
-                meth_3_desc: "Automated queries via SIA API for validation of FITS and spectral cubes.",
-                px_active: "Active Scan",
-                px_dist: "Estimated Distance:",
-                px_temp: "Equilibrium Temp:",
-                px_peak: "SPHEREx Emission Peak:",
-                px_note: "The algorithm automatically scans parallax anomalies in DR1 and QR3 catalogs.",
-                repo_title_1: "Research Repository",
-                repo_desc: "Follow Python source codes, Flask endpoints for IRSA SIA queries, MJD handling routines for 2025/2026, and astrometric analysis notebooks directly in the official workspace.",
-                btn_repo: "Access projectX Notebook",
-                foot_mission: "SPHEREx Mission",
-                foot_spec: "Spectroscopy",
-                foot_ws: "projectX Workspace"
+                meta_title: "hardtofind — SPHEREx, WISE & Firefly for Planet X Research",
+                nav_mission: "How It Works",
+                nav_sources: "Data & Tools",
+                nav_targets: "Test Targets",
+                nav_start: "Start Observation",
+                hero_badge: "Citizen Science • SPHEREx, WISE & Firefly Viewer",
+                hero_title_1: "Explore deep space imagery and help",
+                hero_title_highlight: "track moving worlds",
+                hero_title_2: "across the cosmos.",
+                hero_desc: "The <strong>HardToFind</strong> project explores the <strong>next frontier</strong> by mapping <strong>108 bands</strong> of infrared space data from SPHEREx, WISEView, and Firefly into an optimized search engine, making research accessible to everyone.",
+                btn_start: "Start Observation",
+                btn_tools: "Explore Data & Tools",
+                card_1_title: "1. Multi-Mission Archives",
+                card_1_desc: "We gather deep infrared data and sky photos from NASA's SPHEREx mission and WISE time-lapse archives.",
+                card_2_title: "2. Optimized Filter API",
+                card_2_desc: "Our custom filter engine quickly processes coordinates, filters by specific spectral bands, and calculates numerical approximations for SIA queries.",
+                card_3_title: "3. Advanced Visualization",
+                card_3_desc: "Leverage WISEView for motion animations and Firefly Viewer for deep FITS inspection and multi-band analysis.",
+                sources_subtitle: "Data Sources & Visualization Tools",
+                sources_title: "SPHEREx, WISEView & Firefly Viewer",
+                sources_desc: "Combining multi-band infrared spectroscopy, time-lapse sky animations, and professional FITS image analysis.",
+                spherex_heading: "Spectral Fingerprints",
+                spherex_desc: "Maps the entire sky in 108 distinct infrared colors, identifying chemical compositions and thermal glow signatures.",
+                wise_heading: "Motion Over Time",
+                wise_desc: "Animates years of sky observations to visually reveal objects moving across background stars.",
+                firefly_heading: "Professional FITS & Tables",
+                firefly_desc: "Embedded Firefly instance for deep inspection of FITS images, contrast adjustment, and interactive multi-panel analysis.",
+                targets_subtitle: "Target Presets",
+                targets_title: "Calibration & Test Targets",
+                targets_desc: "Pre-configured astronomical presets used to test proper motion tracking, infrared flux emission, and fast-moving anomalies.",
+                t_barnard_type: "Red Dwarf (Extreme Proper Motion)",
+                t_epsilon_type: "Binary Brown Dwarf System",
+                t_wise_type: "Sub-Brown Dwarf (Fast Moving)",
+                t_rw_type: "Variable Star Systems",
+                t_r_type: "Mira-type Pulsating Variable Star",
+                foot_mission: "How It Works",
+                foot_sources: "Data & Tools",
+                foot_targets: "Test Targets",
+                foot_start: "Start Observation"
             },
             pt: {
-                meta_title: "hardtofind — Missão SPHEREx & Busca pelo Planeta X",
-                nav_spectroscopy: "Abrir Espectroscopia",
-                nav_mission: "A Missão",
-                nav_bands: "108 Bandas",
-                nav_planetax: "Caça ao Planeta X",
-                nav_explore: "Explorar Espectros",
-                hero_badge: "Espectroscopia de Infravermelho Profundo • NASA / Caltech IRSA",
-                hero_title_1: "Revelando o invisível em",
-                hero_title_highlight: "108 cores infravermelhas",
-                hero_title_2: "para ajudar a encontrar o Planeta X.",
-                hero_desc: "O projeto <strong>HardToFind</strong> combina o poder astrométrico da missão espacial SPHEREx com análise espectral para mapear assinaturas térmicas nas fronteiras do Sistema Solar.",
-                btn_explore: "Explorar Espectros (D1-D6)",
-                btn_hypothesis: "A Hipótese do Planeta X",
-                stat_1: "Bandas Espectrais",
-                stat_2: "Espectro Infravermelho",
-                stat_3: "Cobertura do Céu",
-                stat_4: "Dados IRSA Ativos",
-                sim_subtitle: "Simulador Espectral",
-                sim_title: "As 108 Cores Infravermelhas do SPHEREx",
-                sim_desc: "Selecione uma banda principal do SPHEREx (D1 a D6) para visualizar a resposta de comprimento de onda, simulação de intensidade e o perfil térmico associado à busca de corpos frios no espaço profundo.",
-                flux_label: "Fluxo Térmico Estimado",
-                snr_label: "Sensibilidade SNR",
-                channel_start: "Canal 001 (0.75µm)",
-                channel_end: "Canal 108 (5.0µm)",
-                px_tag: "Hipótese Gravitacional",
-                px_title: "A Caça Científica ao Planeta X nas Imagens SPHEREx",
-                px_desc: "Objetos distantes no Cinturão de Kuiper e o hipotético Planeta Nove (Planeta X) exibem órbitas altamente inclinadas e agrupadas gravitacionalmente. Com o levantamento completo do céu em 108 cores do SPHEREx, podemos rastrear a emissão térmica de corpo preto de um gigante gasoso frio a centenas de Unidades Astronômicas (AU).",
-                meth_1_title: "Astrometria de Alta Precisão:",
-                meth_1_desc: "Detecção de movimento próprio infinitesimal comparando épocas de 2025 e 2026.",
-                meth_2_title: "Assinatura de Corpo Preto:",
-                meth_2_desc: "Identificação de fontes infravermelhas frias que não aparecem em pesquisas ópticas tradicionais.",
-                meth_3_title: "Integração com IRSA:",
-                meth_3_desc: "Consultas automatizadas via API SIA para validação de FITS e cubos espectrais.",
-                px_active: "Varredura Ativa",
-                px_dist: "Distância Estimada:",
-                px_temp: "Temperatura de Equilíbrio:",
-                px_peak: "Pico de Emissão SPHEREx:",
-                px_note: "O algoritmo varre automaticamente anomalias de paralaxe em catálogos DR1 e QR3.",
-                repo_title_1: "Repositório de Pesquisa",
-                repo_desc: "Acompanhe os códigos-fonte em Python, endpoints Flask para consulta ao IRSA SIA, rotinas de tratamento de MJD para 2025/2026 e cadernos de análise astrométrica diretamente no workspace oficial.",
-                btn_repo: "Acessar Notebook projectX",
-                foot_mission: "Missão SPHEREx",
-                foot_spec: "Espectroscopia",
-                foot_ws: "projectX Workspace"
-            }
-        };
-
-        const bandDataDescriptions = {
-            en: {
-                d1: { heading: "Near-Infrared Optical Boundary", desc: "Ideal for detecting low-mass stars, brown dwarfs, and young stellar objects in the all-sky survey." },
-                d2: { heading: "H-Band Infrared Window", desc: "Deep analysis of distant galaxies and search for trans-Neptunian objects with strong frozen methane reflectance." },
-                d3: { heading: "K-Band Thermal Mapping", desc: "Sensitive to thermal emissions of cold bodies and molecular signatures of water vapor and ice at solar system boundaries." },
-                d4: { heading: "Mid-Infrared Hydrocarbon Band", desc: "Crucial range for identifying volatile organic compounds and tracking parallax of distant gas planets." },
-                d5: { heading: "Planet X Thermal Signature Band", desc: "Key frequency where cold gas giants (like hypothetical Planet Nine) exhibit blackbody emission peak at 35-40 K." },
-                d6: { heading: "Deep Thermal Infrared Limit", desc: "Upper limit of SPHEREx, allowing cosmic background scanning and highly reddened sources detection." }
-            },
-            pt: {
-                d1: { heading: "Near-Infrared Optical Boundary", desc: "Ideal para detecção de estrelas de baixa massa, anãs marrons e objetos estelares jovens no levantamento panorâmico." },
-                d2: { heading: "H-Band Infrared Window", desc: "Análise profunda de galáxias distantes e busca por objetos transnetunianos com forte reflectância de metano congelado." },
-                d3: { heading: "K-Band Thermal Mapping", desc: "Sensível a emissões térmicas de corpos frios e assinaturas moleculares de vapor d'água e gelo nas fronteiras do sistema solar." },
-                d4: { heading: "Mid-Infrared Hydrocarbon Band", desc: "Faixa crucial para identificar compostos orgânicos voláteis e rastrear a paralaxe de planetas gasosos distantes." },
-                d5: { heading: "Planet X Thermal Signature Band", desc: "Frequência chave onde gigantes gasosos frios (como o hipotético Planeta Nove) exibem pico de emissão de corpo preto a 35-40 K." },
-                d6: { heading: "Deep Thermal Infrared Limit", desc: "Limite superior do SPHEREx, permitindo varredura de fundo cósmico e detecção de fontes altamente avermelhadas." }
+                meta_title: "hardtofind — SPHEREx, WISE e Firefly para Pesquisa do Planeta X",
+                nav_mission: "Como Funciona",
+                nav_sources: "Dados e Ferramentas",
+                nav_targets: "Alvos de Teste",
+                nav_start: "Começar Observação",
+                hero_badge: "Ciência Cidadã • SPHEREx, WISE & Firefly Viewer",
+                hero_title_1: "Explore imagens do espaço profundo e ajude a",
+                hero_title_highlight: "rastrear mundos em movimento",
+                hero_title_2: "pelo cosmos.",
+                hero_desc: "O projeto <strong>HardToFind</strong> explora a <strong>próxima fronteira (next frontier)</strong> mapeando <strong>108 bandas</strong> de dados infravermelhos do SPHEREx, WISEView e Firefly em um motor de busca otimizado, tornando a pesquisa acessível a todos.",
+                btn_start: "Começar Observação",
+                btn_tools: "Explorar Dados e Ferramentas",
+                card_1_title: "1. Arquivos Multi-Missão",
+                card_1_desc: "Reunimos dados infravermelhos profundos e fotos do céu da missão SPHEREx da NASA e dos arquivos temporais do WISE.",
+                card_2_title: "2. API de Filtro Otimizada",
+                card_2_desc: "Nosso motor de busca personalizado processa coordenadas, filtra por bandas espectrais específicas e calcula aproximações numéricas para queries no SIA.",
+                card_3_title: "3. Visualização Avançada",
+                card_3_desc: "Utilize o WISEView para animações de movimento e o Firefly Viewer para inspeção profunda de arquivos FITS e análise multibanda.",
+                sources_subtitle: "Fontes de Dados & Ferramentas de Visualização",
+                sources_title: "SPHEREx, WISEView & Firefly Viewer",
+                sources_desc: "Combinando espectroscopia infravermelho multibanda, animações temporais do céu e análise profissional de imagens FITS.",
+                spherex_heading: "Impressões Digitais Espectrais",
+                spherex_desc: "Mapeia todo o céu em 108 cores infravermelhas distintas, identificando composições químicas e assinaturas térmicas.",
+                wise_heading: "Movimento ao Longo do Tempo",
+                wise_desc: "Anima anos de observações do céu para revelar visualmente objetos em movimento pelas estrelas de fundo.",
+                firefly_heading: "FITS e Tabelas Profissionais",
+                firefly_desc: "Instância integrada do Firefly para inspeção detalhada de imagens FITS, ajuste de contraste e análise interativa.",
+                targets_subtitle: "Alvos Predefinidos",
+                targets_title: "Alvos de Calibração e Teste",
+                targets_desc: "Presets astronômicos pré-configurados usados para testar o rastreamento de movimento próprio, emissão de fluxo infravermelho e anomalias de movimento rápido.",
+                t_barnard_type: "Anã Vermelha (Movimento Próprio Extremo)",
+                t_epsilon_type: "Sistema Binário de Anãs Marrons",
+                t_wise_type: "Sub-Anã Marrom (Movimento Rápido)",
+                t_rw_type: "Sistemas Estelares Variáveis",
+                t_r_type: "Estrela Variável Pulsante Tipo Mira",
+                foot_mission: "How It Works",
+                foot_sources: "Dados e Ferramentas",
+                foot_targets: "Alvos de Teste",
+                foot_start: "Começar Observação"
             }
         };
 
         let currentLang = 'en';
-        let activeBandKey = 'd1';
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'pt' : 'en';
@@ -476,7 +500,6 @@
             });
 
             document.title = translations[currentLang].meta_title;
-            setBand(activeBandKey, false);
         }
 
         lucide.createIcons();
@@ -487,46 +510,32 @@
             mobileMenu.classList.toggle('hidden');
         });
 
-        const bandData = {
-            d1: { title: "SPHEREx Band: spherex-d1", wavelength: "0.75 - 1.10 µm", flux: "142.5 mJy", snr: "31.8 σ" },
-            d2: { title: "SPHEREx Band: spherex-d2", wavelength: "1.10 - 1.60 µm", flux: "188.2 mJy", snr: "38.4 σ" },
-            d3: { title: "SPHEREx Band: spherex-d3", wavelength: "1.60 - 2.40 µm", flux: "96.4 mJy", snr: "27.1 σ" },
-            d4: { title: "SPHEREx Band: spherex-d4", wavelength: "2.40 - 3.40 µm", flux: "64.1 mJy", snr: "22.5 σ" },
-            d5: { title: "SPHEREx Band: spherex-d5", wavelength: "3.40 - 4.50 µm", flux: "215.8 mJy", snr: "45.2 σ" },
-            d6: { title: "SPHEREx Band: spherex-d6", wavelength: "4.50 - 5.00 µm", flux: "118.9 mJy", snr: "29.6 σ" }
-        };
+        /* Intersection Observer para ativar/desativar as animações ao rolar a página */
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px',
+                threshold: 0.15
+            };
 
-        const barsContainer = document.getElementById('spectrum-bars');
-        for(let i = 1; i <= 24; i++) {
-            const bar = document.createElement('div');
-            bar.className = 'w-full bg-emerald-500/30 rounded-t transition-all duration-300 hover:bg-emerald-400';
-            const randomHeight = Math.floor(Math.random() * 80) + 20;
-            bar.style.height = `${randomHeight}%`;
-            barsContainer.appendChild(bar);
-        }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        entry.target.classList.remove('is-hidden');
+                    } else {
+                        if (entry.boundingClientRect.top > 0) {
+                            entry.target.classList.remove('is-visible');
+                        }
+                    }
+                });
+            }, observerOptions);
 
-        function setBand(bandKey, updateActiveKey = true) {
-            if (updateActiveKey) activeBandKey = bandKey;
-
-            document.querySelectorAll('.band-btn').forEach(btn => {
-                btn.className = 'band-btn py-2 px-3 rounded-lg font-mono text-[11px] font-bold transition-all bg-slate-900/80 text-slate-300 border border-emerald-500/20 hover:border-emerald-500/50';
+            document.querySelectorAll('.fade-element').forEach((el, index) => {
+                el.style.transitionDelay = `${(index % 3) * 0.1}s`;
+                observer.observe(el);
             });
-            const activeBtn = document.getElementById(`btn-${bandKey}`);
-            if(activeBtn) {
-                activeBtn.className = 'band-btn py-2 px-3 rounded-lg font-mono text-[11px] font-bold transition-all bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20';
-            }
-
-            const data = bandData[bandKey];
-            const localizedText = bandDataDescriptions[currentLang][bandKey];
-
-            document.getElementById('band-title').innerText = data.title;
-            document.getElementById('band-wavelength').innerText = data.wavelength;
-            document.getElementById('band-heading').innerText = localizedText.heading;
-            document.getElementById('band-desc').innerText = localizedText.desc;
-            document.getElementById('telemetry-flux').innerText = data.flux;
-            document.getElementById('telemetry-snr').innerText = data.snr;
-            document.getElementById('active-channel-label').innerText = `${currentLang === 'en' ? 'Active Channel' : 'Canal Ativo'}: ${bandKey.toUpperCase()}`;
-        }
+        });
     </script>
 </body>
 </html>
