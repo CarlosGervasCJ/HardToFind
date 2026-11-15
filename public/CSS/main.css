@@ -138,17 +138,14 @@ html, body {
 
 /* ===================================================================
  * [DESKTOP] Ajuste da Sidebar do WiseView no Desktop
- * =================================================================== */
-/* ===================================================================
- * [DESKTOP] Ajuste da Sidebar do WiseView no Desktop
- * =================================================================== */
+ * =======================*/
 #wvFrame { 
   border: none; 
   display: block; 
   position: relative;
   
   /* Altere o valor abaixo (-150px) para esconder mais ou menos a barra lateral */
-  transform: translateX(-150px); 
+  transform: translateX(-100px); 
   
   /* Usa 100% da largura da coluna + o exato valor deslocado para compensar */
   width: calc(100% + 150px) !important; 
