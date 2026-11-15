@@ -20,7 +20,7 @@ const BAND_DATA = {
 };
 
 /* Sistema de Traduções Internas para Alternância (PT / EN) */
-let currentLang = 'pt'; // Inicia por padrão em Português
+let currentLang = 'en'; // Inicia por padrão em Português
 
 const TRANSLATIONS = {
   pt: {
