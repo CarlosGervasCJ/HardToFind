@@ -135,11 +135,22 @@ html, body {
   min-width:0;
 }
 #wv-clip { position:absolute; inset:0; overflow:hidden; }
-#wvFrame { border:none; display:block; width:1980px; }
+
+/* ===================================================================
+ * [DESKTOP] Ajuste do Iframe do WiseView no Desktop
+ * =================================================================== */
+#wvFrame { 
+  border:none; 
+  display:block; 
+  width: 1980px; /* Altere aqui caso precise de mais ou menos largura no desktop */
+}
 
 /* Coluna 2: Presets & Alvos */
+/* ===================================================================
+ * [DESKTOP] Ajuste da Largura da Coluna de Presets
+ * =================================================================== */
 #preset-col {
-  width: 330px;
+  width: 330px;       /* Altere aqui a largura padrão desta coluna no desktop */
   min-width: 290px;
   display: flex;
   flex-direction: column;
@@ -229,8 +240,12 @@ html, body {
 }
 
 /* Coluna 3: SPHEREx */
+/* ===================================================================
+ * [DESKTOP] Ajuste da Largura da Coluna SPHEREx
+ * =================================================================== */
 #spherex-col {
-  width:40%; min-width:320px;
+  width: 30%;         /* Altere a porcentagem que esta coluna ocupa da tela no desktop */
+  min-width: 320px;
   display:flex; flex-direction:column;
   overflow:hidden; position:relative;
   background:var(--space-black);
@@ -415,7 +430,9 @@ html, body {
 .meta-item .key { font-size:10px; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:2px; }
 .meta-item .val { font-size:12px; font-weight:600; color:var(--text); font-family:var(--font-mono); }
 
-/* Responsivo */
+/* ===================================================================
+ * [MOBILE] Bloco Responsivo (Telas menores que 1100px)
+ * =================================================================== */
 @media (max-width: 1100px) {
   /* Desbloquear scroll de página apenas em mobile/tablet */
   html, body { overflow: auto; height: auto; }
@@ -429,30 +446,26 @@ html, body {
     border-right: none;
     border-bottom: 1px solid var(--border);
     position: relative;
-    overflow: hidden; /* Corta tudo que for empurrado para fora */
+    overflow: hidden; /* Corta o excesso empurrado pelo transform */
   }
 
   /* 
-   * ===================================================================
-   * ÁREA DE ALINHAMENTO DO WISEVIEW (MOBILE)
-   * ===================================================================
-   * Ajuste o valor dentro de translateX(...) ou translateY(...) para 
-   * esconder a barra de ferramentas desejada.
+   * [MOBILE] Ocultar a barra lateral/topo do WiseView no Celular
    */
   #wvFrame {
-    /* OPÇÃO A: Se a barra do WiseView fica na ESQUERDA: */
-    transform: translateX(-190px); /* <<< ALINHE AQUI: Aumente/diminua o valor (ex: -200px, -260px) até sumir a sidebar */
-    width: calc(100% + 240px) !important; /* <<< Mantenha igual ao valor absoluto do translateX para preencher a tela */
+    /* Ajuste o valor abaixo (-240px) para cobrir exatamente a barra lateral do WiseView */
+    transform: translateX(-110px); 
+    width: calc(100% + 240px) !important; /* Mantenha o mesmo valor de compensação da largura */
     
-    /* OPÇÃO B: Se a barra do WiseView fica no TOPO (descomente e comente as linhas acima se for o caso): */
-    /* transform: translateY(-50px); */ /* <<< ALINHE AQUI: Ajuste a altura em px da barra superior */
-    /* height: calc(100% + 50px) !important; */
+    /* Se quisesse esconder o topo em vez da lateral, usaria:
+     * transform: translateY(-50px);
+     * height: calc(100% + 50px) !important;
+     */
     
     position: relative;
   }
-  /* =================================================================== */
 
-  /* Coluna de presets: largura total, sem scroll interno forçado */
+  /* Coluna de presets no mobile: largura total */
   #preset-col {
     width: 100%;
     min-width: unset;
@@ -466,7 +479,7 @@ html, body {
     max-height: none;
   }
 
-  /* Coluna SPHEREx: cresce conforme conteúdo */
+  /* Coluna SPHEREx no mobile: largura total e altura automática */
   #spherex-col {
     width: 100%;
     min-width: unset;
@@ -475,14 +488,14 @@ html, body {
     overflow: visible;
   }
 
-  /* Firefly: altura fixa razoável */
+  /* Firefly: altura fixa razoável no mobile */
   #fireflyArea {
     height: 340px;
     flex: none;
     overflow: hidden;
   }
 
-  /* Espectroscópio: altura automática */
+  /* Espectroscópio no mobile */
   #spectrometer { overflow: visible; }
   #spec-body {
     grid-template-columns: 1fr;
