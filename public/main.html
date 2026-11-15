@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HardToFind — Observation</title>
+  <title>HardToFind — Observação</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script type="text/javascript" src="https://irsa.ipac.caltech.edu/irsaviewer/firefly_loader.js"></script>
@@ -23,6 +23,14 @@
        TOP MENU BAR
   ══════════════════════════════════════ -->
   <div id="topbar">
+    <!-- Botão para voltar à Landing Page (index.html) -->
+    <a href="index.html" class="tb-btn secondary" id="backHomeBtn" style="padding: 6px 10px; text-decoration: none;" title="Voltar à Página Inicial">
+      <i data-lucide="arrow-left" style="width:13px;height:13px"></i>
+      <span data-i18n="nav_home">Início</span>
+    </a>
+
+    <div class="tb-sep"></div>
+
     <a href="index.html" class="brand">
       <div class="brand-logo"><i data-lucide="orbit"></i></div>
       <span class="brand-name">Hard<em>ToFind</em></span>
@@ -43,7 +51,7 @@
     <div class="tb-sep"></div>
 
     <div class="tb-group">
-      <span class="tb-label">Banda</span>
+      <span class="tb-label" data-i18n="nav_band">Banda</span>
       <select class="tb-input small" id="bandInput">
         <option value="d1">d1</option>
         <option value="d2">d2</option>
@@ -55,14 +63,14 @@
     </div>
 
     <div class="tb-group">
-      <span class="tb-label">Raio (″)</span>
+      <span class="tb-label" data-i18n="nav_radius">Raio (″)</span>
       <input type="number" class="tb-input small" id="radiusInput" value="60" min="1" max="3600">
     </div>
 
     <div class="tb-sep"></div>
 
     <div class="tb-group">
-      <span class="tb-label">Blink (ms)</span>
+      <span class="tb-label" data-i18n="nav_blink">Blink (ms)</span>
       <input type="number" class="tb-input small" id="speedInput" value="400" min="50" max="2000" step="50">
     </div>
 
@@ -70,17 +78,22 @@
 
     <button class="tb-btn primary" id="searchBtn">
       <i data-lucide="telescope" style="width:13px;height:13px"></i>
-      <span>Pesquisar</span>
+      <span data-i18n="nav_search">Pesquisar</span>
     </button>
 
     <button class="tb-btn secondary" id="configBtn">
       <i data-lucide="settings-2" style="width:13px;height:13px"></i>
-      <span>Config. WiseView</span>
+      <span data-i18n="nav_config">Config. WiseView</span>
+    </button>
+
+    <!-- Botão de Alternância de Idioma (PT / EN) -->
+    <button class="tb-btn secondary" id="langToggleBtn" style="padding: 6px 10px; font-weight:700;" title="Alternar Idioma / Switch Language">
+      🌐 <span id="langLabel">EN</span>
     </button>
 
     <div class="tb-sep"></div>
     <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">pronto</span>
+    <span id="statusText" data-i18n="status_ready">pronto</span>
   </div>
 
   <!-- ══════════════════════════════════════
@@ -98,22 +111,22 @@
     <!-- ── Coluna 2: Presets & Alvos ── -->
     <div id="preset-col">
       <div id="preset-header">
-        <span class="col-title">Presets · <em>Alvos Astronómicos</em></span>
+        <span class="col-title">Presets · <em data-i18n="col2_subtitle">Alvos Astronómicos</em></span>
       </div>
       <div id="preset-body">
         
         <!-- 1. Seletor Rápido (Combobox) -->
         <div class="preset-group">
-          <label class="tb-label" for="presetSelect">Selecionar Alvo</label>
+          <label class="tb-label" for="presetSelect" data-i18n="preset_select_label">Selecionar Alvo</label>
           <select class="tb-input" id="presetSelect" style="width:100%;">
-            <option value="" disabled selected>-- Escolher alvo pré-definido --</option>
+            <option value="" disabled selected data-i18n="preset_default_option">-- Escolher alvo pré-definido --</option>
           </select>
         </div>
 
-        <!-- 2. Card de Imagem (Entre a combobox e o card de info, com fundo preto) -->
+        <!-- 2. Card de Imagem -->
         <div class="target-image-card">
           <img id="targetImg" src="" alt="Target Image" onerror="this.style.display='none'">
-          <span class="image-placeholder-text">Fundo Preto / Pré-visualização</span>
+          <span class="image-placeholder-text" data-i18n="image_placeholder">Fundo Preto / Pré-visualização</span>
         </div>
 
         <!-- 3. Painel de Detalhes do Alvo Selecionado -->
@@ -126,26 +139,26 @@
 
           <div class="target-meta-grid">
             <div class="target-meta-item">
-              <div class="tkey">Tipo</div>
+              <div class="tkey" data-i18n="card_type">Tipo</div>
               <div class="tval" id="targetType">Red Dwarf</div>
             </div>
             <div class="target-meta-item">
-              <div class="tkey">FOV Recomendado</div>
+              <div class="tkey" data-i18n="card_fov">FOV Recomendado</div>
               <div class="tval" id="targetFov">0.15°</div>
             </div>
             <div class="target-meta-item">
-              <div class="tkey">Banda Ideal</div>
+              <div class="tkey" data-i18n="card_band">Banda Ideal</div>
               <div class="tval" id="targetBand">D5</div>
             </div>
             <div class="target-meta-item">
-              <div class="tkey">Fluxo Térmico</div>
+              <div class="tkey" data-i18n="card_flux">Fluxo Térmico</div>
               <div class="tval" id="targetFlux">142.5 mJy</div>
             </div>
           </div>
 
           <button class="tb-btn primary" id="applyPresetBtn" style="width:100%; justify-content:center; margin-top:12px; padding: 8px;">
             <i data-lucide="crosshair" style="width:14px;height:14px"></i>
-            <span>Carregar no Observatório</span>
+            <span data-i18n="btn_load_observatory">Carregar no Observatório</span>
           </button>
         </div>
 
@@ -159,18 +172,18 @@
         <div class="header-actions">
           <button class="tb-btn secondary" id="metaBtn" style="font-size:11px;padding:4px 10px;" disabled>
             <i data-lucide="file-text" style="width:12px;height:12px"></i>
-            Metadados
+            <span data-i18n="btn_metadata">Metadados</span>
           </button>
         </div>
       </div>
 
-      <!-- Firefly (55% da altura) -->
+      <!-- Firefly -->
       <div id="fireflyArea">
         <div id="fireflyDisplay"></div>
         <div id="spherex-empty">
           <div class="empty-icon">🌌</div>
-          <div class="empty-title">Aguardando pesquisa</div>
-          <div style="font-size:12px;color:var(--text-muted);">
+          <div class="empty-title" data-i18n="empty_title">Aguardando pesquisa</div>
+          <div style="font-size:12px;color:var(--text-muted);" data-i18n="empty_desc">
             Selecione um preset ou insira coordenadas e clique em Pesquisar
           </div>
         </div>
@@ -179,7 +192,7 @@
       <!-- Espectroscópio interativo -->
       <div id="spectrometer">
         <div id="spec-header">
-          <span class="spec-title">Espectroscópio · <em>Banda activa</em></span>
+          <span class="spec-title"><span data-i18n="spec_title">Espectroscópio</span> · <em data-i18n="spec_active_band">Banda activa</em></span>
           <span class="spec-live">● LIVE SYNC</span>
         </div>
 
@@ -204,7 +217,7 @@
             </div>
             <div class="spec-telemetry">
               <div class="spec-tele-card">
-                <div class="tkey">Thermal Flux</div>
+                <div class="tkey" data-i18n="spec_thermal_flux">Thermal Flux</div>
                 <div class="tval" id="spec-flux">215.8 mJy</div>
               </div>
               <div class="spec-tele-card">
@@ -232,11 +245,11 @@
       <div id="meta-overlay">
         <div id="meta-panel">
           <button class="meta-close" id="metaClose" aria-label="Fechar">&#215;</button>
-          <h2>Metadados da observação</h2>
+          <h2 data-i18n="meta_panel_title">Metadados da observação</h2>
           <div id="metaGrid"></div>
           <div class="fits-url-box" id="fitsUrlBox" style="display:none">
             <span class="fits-url-text" id="fitsUrlText"></span>
-            <button class="copy-btn" id="copyFitsBtn">copiar</button>
+            <button class="copy-btn" id="copyFitsBtn" data-i18n="btn_copy">copiar</button>
           </div>
         </div>
       </div>
