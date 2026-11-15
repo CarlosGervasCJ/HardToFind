@@ -244,7 +244,7 @@ html, body {
  * [DESKTOP] Ajuste da Largura da Coluna SPHEREx
  * =================================================================== */
 #spherex-col {
-  width: 30%;         /* Altere a porcentagem que esta coluna ocupa da tela no desktop */
+  width: 50%;         /* Altere a porcentagem que esta coluna ocupa da tela no desktop */
   min-width: 320px;
   display:flex; flex-direction:column;
   overflow:hidden; position:relative;
