@@ -20,7 +20,7 @@ const BAND_DATA = {
 };
 
 /* Sistema de Traduções Internas para Alternância (PT / EN) */
-let currentLang = 'en'; // Inicia por padrão em Português
+let currentLang = 'pt'; // Inicia por padrão em Português
 
 const TRANSLATIONS = {
   pt: {
@@ -131,7 +131,7 @@ const PRESETS = [
       pt: "Sistemas Estelares Variáveis.",
       en: "Variable Star Systems."
     },
-    image: 'images/rw_aur.png'
+    image: 'images/aurigae.png'
   },
   {
     id: 'r_dra',
@@ -143,7 +143,7 @@ const PRESETS = [
       pt: "Estrela Variável Pulsante do tipo Mira.",
       en: "Mira-type Pulsating Variable Star."
     },
-    image: 'images/r_dra.png'
+    image: 'images/draconis.png'
   }
 ];
 
@@ -568,8 +568,9 @@ document.getElementById('bandInput')?.addEventListener('change', e => setBand(e.
 window.addEventListener('resize', () => applyWVLayout(configOpen));
 
 
-toggleLanguage();
+
 initPresets();
 initBars();
 setBand(activeBand);
 applyWVLayout(false);
+toggleLanguage();
