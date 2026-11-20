@@ -226,12 +226,9 @@ function updateTargetCard(p) {
   targetBandEl.textContent   = p.band.toUpperCase();
   targetFluxEl.textContent   = p.flux;
 
-  if (p.image) {
-    targetImgEl.style.display = 'block';
-    targetImgEl.src = p.image;
-  } else {
-    targetImgEl.style.display = 'none';
-  }
+  
+  targetImgEl.style.display = 'none';
+  
 }
 
 function loadSelectedPresetToObservatory() {
