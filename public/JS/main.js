@@ -19,8 +19,7 @@ const BAND_DATA = {
   d6:{ label:'D6', wl:'4.50 – 5.00 µm', heading:{pt:'Limite Profundo de Infravermelho Térmico', en:'Deep Thermal Infrared Limit'}, desc:{pt:'Limite superior do SPHEREx — varredura de fundo cósmico e deteção de fontes altamente avermelhadas.', en:'Upper SPHEREx limit — cosmic background scanning and highly reddened source detection.'}, flux:'118.9 mJy', snr:'29.6 σ', color:'#38bdf8', range:[85,102] },
 };
 
-/* Sistema de Traduções Internas para Alternância (PT / EN) */
-let currentLang = 'pt'; // Inicia por padrão em Português
+let currentLang = 'pt';
 
 const TRANSLATIONS = {
   pt: {
@@ -83,7 +82,6 @@ const TRANSLATIONS = {
   }
 };
 
-/* Os 5 Presets com suporte a descrições dinâmicas PT/EN */
 const PRESETS = [
   {
     id: 'barnard',
@@ -147,11 +145,12 @@ const PRESETS = [
   }
 ];
 
-let configOpen   = false;
-let lastResult   = null;
-let fireflyReady = false;
-let activeBand   = 'd5';
-let barHeights   = [];
+let configOpen    = false;
+let lastResult    = null;
+let fireflyReady  = false;
+let fireflyLoading = false;
+let activeBand    = 'd5';
+let barHeights    = [];
 let currentPreset = PRESETS[0];
 
 /* Elementos DOM */
@@ -168,7 +167,6 @@ const metaClose   = document.getElementById('metaClose');
 const metaGrid    = document.getElementById('metaGrid');
 const specBars    = document.getElementById('spectrum-bars');
 
-const presetSelect   = document.getElementById('presetSelect');
 const applyPresetBtn = document.getElementById('applyPresetBtn');
 const targetNameEl   = document.getElementById('targetName');
 const targetCoordsEl = document.getElementById('targetCoords');
@@ -181,8 +179,15 @@ const targetImgEl    = document.getElementById('targetImg');
 const langToggleBtn  = document.getElementById('langToggleBtn');
 const langLabel      = document.getElementById('langLabel');
 
+// presetSelect não é const pois pode ser re-obtido após clone
+let presetSelect = document.getElementById('presetSelect');
+
 function initPresets() {
+  // Re-obtém referência fresca (pode ter sido clonado em chamadas anteriores)
+  presetSelect = document.getElementById('presetSelect');
   if (!presetSelect) return;
+
+  // Reconstrói as opções
   presetSelect.innerHTML = `<option value="" disabled selected>${TRANSLATIONS[currentLang].preset_default_option}</option>`;
   PRESETS.forEach(p => {
     const opt = document.createElement('option');
@@ -190,9 +195,13 @@ function initPresets() {
     opt.textContent = p.name;
     presetSelect.appendChild(opt);
   });
-
   presetSelect.value = currentPreset.id;
   updateTargetCard(currentPreset);
+
+  // Clona o elemento para remover quaisquer listeners antigos
+  const fresh = presetSelect.cloneNode(true);
+  presetSelect.parentNode.replaceChild(fresh, presetSelect);
+  presetSelect = fresh;
 
   presetSelect.addEventListener('change', e => {
     const found = PRESETS.find(p => p.id === e.target.value);
@@ -202,9 +211,10 @@ function initPresets() {
     loadSelectedPresetToObservatory();
   });
 
-  applyPresetBtn.addEventListener('click', () => {
-    loadSelectedPresetToObservatory();
-  });
+  // Guard no applyPresetBtn para não acumular listeners
+  const freshBtn = applyPresetBtn.cloneNode(true);
+  applyPresetBtn.parentNode.replaceChild(freshBtn, applyPresetBtn);
+  freshBtn.addEventListener('click', () => loadSelectedPresetToObservatory());
 }
 
 function updateTargetCard(p) {
@@ -238,14 +248,10 @@ function loadSelectedPresetToObservatory() {
 
 window.onFireflyLoaded = function () { fireflyReady = true; };
 
-
-let fireflyLoading = false;  // Guard contra carregamentos múltiplos
-
 function getActiveTitle() {
   const ra  = parseFloat(document.getElementById('raInput').value);
   const dec = parseFloat(document.getElementById('decInput').value);
 
-  // Verifica se as coordenadas correspondem a algum preset (tolerância 0.001°)
   const matched = PRESETS.find(p =>
     Math.abs(p.ra  - ra)  < 0.001 &&
     Math.abs(p.dec - dec) < 0.001
@@ -255,32 +261,26 @@ function getActiveTitle() {
 }
 
 function loadFirefly(fitsUrl) {
-  // Correção 3: evitar múltiplos carregamentos simultâneos
   if (!fireflyReady || !window.firefly) return;
   if (fireflyLoading) return;
   fireflyLoading = true;
 
   const ra    = parseFloat(document.getElementById('raInput').value)  || 269.452;
   const dec   = parseFloat(document.getElementById('decInput').value) || 4.693;
-  const title = getActiveTitle();  // Correção 2: título 'undefined' se não for preset
+  const title = getActiveTitle();
 
-  // Correção 1: WorldPt centra exactamente nas coordenadas inseridas
   window.firefly.showImage('fireflyDisplay', {
-    URL:       fitsUrl || 'https://irsa.ipac.caltech.edu/ibe/data/wise/allwise/p3am_cdd/00/0014/00140a137-w1-int-3.fits',
-    Title:     title,
-    PlotId:    'spherex_plot',
-    ZoomType:  'TO_WIDTH',
-    ColorTable: 0,
-    StretchType:'ZScale',
-    // Centra o visualizador nas coordenadas RA/Dec exactas do input
-    WorldPt:   `${ra};${dec};EQ_J2000`,
+    URL:         fitsUrl || 'https://irsa.ipac.caltech.edu/ibe/data/wise/allwise/p3am_cdd/00/0014/00140a137-w1-int-3.fits',
+    Title:       title,
+    PlotId:      'spherex_plot',
+    ZoomType:    'TO_WIDTH',
+    ColorTable:  0,
+    StretchType: 'ZScale',
+    WorldPt:     `${ra};${dec};EQ_J2000`,
   });
 
-  // Liberta o guard após delay razoável (Firefly não tem callback de conclusão)
   setTimeout(() => { fireflyLoading = false; }, 3000);
 }
-
-
 
 function applyWVLayout(showNav) {
   const h      = wvCol.offsetHeight;
@@ -360,7 +360,6 @@ function setStatus(state, msg) {
 function showEmpty(type, msg) {
   emptyDiv.style.display = 'flex';
   emptyDiv.className = '';
-  const t = TRANSLATIONS[currentLang];
   if (type === 'loading') {
     emptyDiv.innerHTML = `<div class="empty-icon" style="opacity:.35">⏳</div><div class="empty-title">${currentLang === 'pt' ? 'Consultando IRSA…' : 'Consulting IRSA…'}</div>`;
     return;
@@ -401,21 +400,16 @@ async function searchSPHEREx() {
     const data = await res.json();
     lastResult = data;
 
-    const record = data.data || data;
+    const record  = data.data || data;
     const fitsUrl = record.fits_url || record.access_url;
 
-    if (fitsUrl) {
-      hideEmpty();
-      loadFirefly(fitsUrl);
-    } else { hideEmpty(); loadFirefly(); }
+    hideEmpty();
+    loadFirefly(fitsUrl || null);
 
     if (record.energy_bandpassname) {
       const bMatch = record.energy_bandpassname.toLowerCase();
       for (const k of Object.keys(BAND_DATA)) {
-        if (bMatch.includes(k)) {
-          setBand(k);
-          break;
-        }
+        if (bMatch.includes(k)) { setBand(k); break; }
       }
     } else if (data.band && BAND_DATA[data.band]) {
       setBand(data.band);
@@ -426,11 +420,11 @@ async function searchSPHEREx() {
     setStatus('ok', sep !== undefined ? `Match a ${Number(sep).toFixed(2)}″` : 'OK');
 
   } catch(err) {
-    const msg = err.message || 'Erro desconhecido';
+    const msg  = err.message || 'Erro desconhecido';
     const down = /irsa|caltech|timeout|network|unavailable|503|502|504/i.test(msg);
     showEmpty(down ? 'irsa-down' : 'error', msg);
     setStatus('err', down ? t.status_irsa_down : msg);
-    loadFirefly();
+    // Não chama loadFirefly() no catch — evita carregamento extra em caso de erro
   } finally {
     searchBtn.classList.remove('loading');
     searchBtn.innerHTML = `<i data-lucide="telescope" style="width:13px;height:13px"></i> <span>${t.nav_search}</span>`;
@@ -442,8 +436,8 @@ function openMeta() {
   if (!lastResult) return;
   const d = lastResult.data || lastResult;
   const topInfo = {
-    status: lastResult.status,
-    period: lastResult.period,
+    status:       lastResult.status,
+    period:       lastResult.period,
     period_label: lastResult.period_label
   };
 
@@ -498,6 +492,7 @@ function openMeta() {
   const sendBtn = document.getElementById('sendToFireflyBtn');
   if (sendBtn && fitsUrl) {
     sendBtn.addEventListener('click', () => {
+      fireflyLoading = false; // Reset guard para permitir carga explícita via metadata
       loadFirefly(fitsUrl);
       closeMeta();
       setStatus('ok', currentLang === 'pt' ? 'FITS carregado no Firefly com sucesso!' : 'FITS successfully loaded into Firefly!');
@@ -519,58 +514,56 @@ function openMeta() {
 
 function closeMeta() { metaOverlay.classList.remove('visible'); }
 
-/* Função para Alternar Idioma Dinamicamente */
 function toggleLanguage() {
   currentLang = currentLang === 'pt' ? 'en' : 'pt';
   langLabel.textContent = currentLang === 'pt' ? 'EN' : 'PT';
 
-  // Atualiza textos estáticos marcados com data-i18n
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (TRANSLATIONS[currentLang][key]) {
-      el.textContent = TRANSLATIONS[currentLang][key];
-    }
+    if (TRANSLATIONS[currentLang][key]) el.textContent = TRANSLATIONS[currentLang][key];
   });
 
-  // Atualiza o botão de configuração se estiver aberto/fechado
   if (configBtn.querySelector('span')) {
-    configBtn.querySelector('span').textContent = configOpen ? (currentLang === 'pt' ? 'Fechar config.' : 'Close Config') : (currentLang === 'pt' ? 'Config. WiseView' : 'WiseView Config');
+    configBtn.querySelector('span').textContent = configOpen
+      ? (currentLang === 'pt' ? 'Fechar config.' : 'Close Config')
+      : (currentLang === 'pt' ? 'Config. WiseView' : 'WiseView Config');
   }
 
-  // Atualiza componentes dinâmicos da página
   updateTargetCard(currentPreset);
   setBand(activeBand);
-  initPresets();
+  initPresets(); // seguro — clone interno remove listeners duplicados
 }
 
+/* Event listeners globais (registados uma única vez) */
 searchBtn.addEventListener('click', () => { loadWiseView(); searchSPHEREx(); });
 
 configBtn.addEventListener('click', () => {
   configOpen = !configOpen;
-  const t = TRANSLATIONS[currentLang];
-  configBtn.querySelector('span') && (configBtn.querySelector('span').textContent = configOpen ? (currentLang === 'pt' ? 'Fechar config.' : 'Close Config') : (currentLang === 'pt' ? 'Config. WiseView' : 'WiseView Config'));
+  if (configBtn.querySelector('span')) {
+    configBtn.querySelector('span').textContent = configOpen
+      ? (currentLang === 'pt' ? 'Fechar config.' : 'Close Config')
+      : (currentLang === 'pt' ? 'Config. WiseView' : 'WiseView Config');
+  }
   applyWVLayout(configOpen);
 });
 
 metaBtn.addEventListener('click', openMeta);
 metaClose.addEventListener('click', closeMeta);
-metaOverlay.addEventListener('click', e => { if(e.target===metaOverlay) closeMeta(); });
+metaOverlay.addEventListener('click', e => { if (e.target === metaOverlay) closeMeta(); });
 langToggleBtn.addEventListener('click', toggleLanguage);
 
 document.getElementById('bandInput')?.addEventListener('change', e => setBand(e.target.value));
 
 ['raInput','decInput','bandInput','radiusInput','speedInput'].forEach(id => {
   document.getElementById(id)?.addEventListener('keydown', e => {
-    if(e.key==='Enter') { loadWiseView(); searchSPHEREx(); }
+    if (e.key === 'Enter') { loadWiseView(); searchSPHEREx(); }
   });
 });
 
 window.addEventListener('resize', () => applyWVLayout(configOpen));
 
-
-
-initPresets();
+/* Inicialização — ordem correcta */
+toggleLanguage(); // define currentLang, actualiza i18n, e chama initPresets()
 initBars();
 setBand(activeBand);
 applyWVLayout(false);
-toggleLanguage();
