@@ -148,7 +148,7 @@ html, body {
   transform: translateX(-85px); 
   
   /* Usa 100% da largura da coluna + o exato valor deslocado para compensar */
-  width: calc(100% + 150px) !important; 
+  width: calc(100% + 85px) !important; 
 }
 
 /* Coluna 2: Presets & Alvos */
