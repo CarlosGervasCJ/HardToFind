@@ -149,7 +149,7 @@ let configOpen    = false;
 let lastResult    = null;
 let fireflyReady  = false;
 let fireflyLoading = false;
-let activeBand    = 'd5';
+let activeBand    = 'd2';
 let barHeights    = [];
 let currentPreset = PRESETS[0];
 
