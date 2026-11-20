@@ -95,7 +95,7 @@ const PRESETS = [
       pt: "Anã Vermelha com movimento próprio extremo através do céu.",
       en: "Red Dwarf with extreme proper motion across the sky."
     },
-    image: 'images/barnard.jpg'
+    image: 'images/barnard.png'
   },
   {
     id: 'epsilon',
@@ -107,7 +107,7 @@ const PRESETS = [
       pt: "Sistema Binário de Anãs Castanhas.",
       en: "Binary Brown Dwarf System."
     },
-    image: 'images/epsilon.jpg'
+    image: 'images/epsilon.png'
   },
   {
     id: 'wise',
@@ -119,7 +119,7 @@ const PRESETS = [
       pt: "Sub-Anã Castanha (Movimento Rápido).",
       en: "Sub-Brown Dwarf (Fast Moving)."
     },
-    image: 'images/wise0855.jpg'
+    image: 'images/wise0855.png'
   },
   {
     id: 'rw_aur',
@@ -131,7 +131,7 @@ const PRESETS = [
       pt: "Sistemas Estelares Variáveis.",
       en: "Variable Star Systems."
     },
-    image: 'images/rw_aur.jpg'
+    image: 'images/rw_aur.png'
   },
   {
     id: 'r_dra',
@@ -143,7 +143,7 @@ const PRESETS = [
       pt: "Estrela Variável Pulsante do tipo Mira.",
       en: "Mira-type Pulsating Variable Star."
     },
-    image: 'images/r_dra.jpg'
+    image: 'images/r_dra.png'
   }
 ];
 
@@ -238,15 +238,49 @@ function loadSelectedPresetToObservatory() {
 
 window.onFireflyLoaded = function () { fireflyReady = true; };
 
-function loadFirefly(fitsUrl) {
-  if (!fireflyReady || !window.firefly) return;
-  window.firefly.showImage('fireflyDisplay', {
-    URL: fitsUrl || 'https://irsa.ipac.caltech.edu/ibe/data/wise/allwise/p3am_cdd/00/0014/00140a137-w1-int-3.fits',
-    Title: currentPreset ? currentPreset.name : 'SPHEREx Target',
-    PlotId: 'spherex_plot',
-    ZoomType: 'TO_WIDTH', ColorTable: 2, StretchType: 'ZScale',
-  });
+
+let fireflyLoading = false;  // Guard contra carregamentos múltiplos
+
+function getActiveTitle() {
+  const ra  = parseFloat(document.getElementById('raInput').value);
+  const dec = parseFloat(document.getElementById('decInput').value);
+
+  // Verifica se as coordenadas correspondem a algum preset (tolerância 0.001°)
+  const matched = PRESETS.find(p =>
+    Math.abs(p.ra  - ra)  < 0.001 &&
+    Math.abs(p.dec - dec) < 0.001
+  );
+
+  return matched ? matched.name : 'undefined';
 }
+
+function loadFirefly(fitsUrl) {
+  // Correção 3: evitar múltiplos carregamentos simultâneos
+  if (!fireflyReady || !window.firefly) return;
+  if (fireflyLoading) return;
+  fireflyLoading = true;
+
+  const ra    = parseFloat(document.getElementById('raInput').value)  || 269.452;
+  const dec   = parseFloat(document.getElementById('decInput').value) || 4.693;
+  const title = getActiveTitle();  // Correção 2: título 'undefined' se não for preset
+
+  // Correção 1: WorldPt centra exactamente nas coordenadas inseridas
+  window.firefly.showImage('fireflyDisplay', {
+    URL:       fitsUrl || 'https://irsa.ipac.caltech.edu/ibe/data/wise/allwise/p3am_cdd/00/0014/00140a137-w1-int-3.fits',
+    Title:     title,
+    PlotId:    'spherex_plot',
+    ZoomType:  'TO_WIDTH',
+    ColorTable: 0,
+    StretchType:'ZScale',
+    // Centra o visualizador nas coordenadas RA/Dec exactas do input
+    WorldPt:   `${ra};${dec};EQ_J2000`,
+  });
+
+  // Liberta o guard após delay razoável (Firefly não tem callback de conclusão)
+  setTimeout(() => { fireflyLoading = false; }, 3000);
+}
+
+
 
 function applyWVLayout(showNav) {
   const h      = wvCol.offsetHeight;
@@ -533,6 +567,8 @@ document.getElementById('bandInput')?.addEventListener('change', e => setBand(e.
 
 window.addEventListener('resize', () => applyWVLayout(configOpen));
 
+
+toggleLanguage();
 initPresets();
 initBars();
 setBand(activeBand);
